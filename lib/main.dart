@@ -46,7 +46,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'FarmConnect',
         navigatorKey: navigatorKey, // Use the global navigator key
-        theme: ThemeData(
+      theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.green,
             primary: Colors.green,
