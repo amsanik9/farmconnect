@@ -21,7 +21,7 @@ class CartProvider with ChangeNotifier {
     return total;
   }
 
-  void addItem(Product product, {int quantity = 1, double? negotiatedPrice}) {
+  void addItem(Product product, {int quantity = 50, double? negotiatedPrice}) {
     if (_items.containsKey(product.id)) {
       // Update the quantity
       _items.update(
@@ -51,6 +51,22 @@ class CartProvider with ChangeNotifier {
     notifyListeners();
   }
 
+  void addSingleItem(Product product, {double? negotiatedPrice}) {
+    if (_items.containsKey(product.id)) {
+      // Add just 1 to the quantity
+      _items.update(
+        product.id,
+        (existingCartItem) => existingCartItem.copyWith(
+          quantity: existingCartItem.quantity + 1,
+        ),
+      );
+      notifyListeners();
+    } else {
+      // For new items, still use the minimum of 50
+      addItem(product, negotiatedPrice: negotiatedPrice);
+    }
+  }
+
   void removeItem(String productId) {
     _items.remove(productId);
     notifyListeners();
@@ -60,17 +76,23 @@ class CartProvider with ChangeNotifier {
     if (!_items.containsKey(productId)) {
       return;
     }
-    if (_items[productId]!.quantity > 1) {
+    if (_items[productId]!.quantity > 50) {
       _items.update(
         productId,
         (existingCartItem) => existingCartItem.copyWith(
           quantity: existingCartItem.quantity - 1,
         ),
       );
-    } else {
-      _items.remove(productId);
+      notifyListeners();
     }
-    notifyListeners();
+    // Don't remove or reduce if at minimum quantity (50)
+  }
+
+  bool canReduceQuantity(String productId) {
+    if (!_items.containsKey(productId)) {
+      return false;
+    }
+    return _items[productId]!.quantity > 50;
   }
 
   void clear() {

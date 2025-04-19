@@ -194,13 +194,47 @@ class CartScreen extends StatelessWidget {
                                       ),
                                     ),
                                   IconButton(
+                                    icon: const Icon(Icons.delete_outline),
+                                    color: Theme.of(context).colorScheme.error,
+                                    onPressed: () {
+                                      showDialog(
+                                        context: context,
+                                        builder: (ctx) => AlertDialog(
+                                          title: const Text('Remove Item'),
+                                          content: Text('Remove ${cartItem.name} from your cart?'),
+                                          actions: [
+                                            TextButton(
+                                              onPressed: () => Navigator.of(ctx).pop(),
+                                              child: const Text('CANCEL'),
+                                            ),
+                                            TextButton(
+                                              onPressed: () {
+                                                cart.removeItem(cartItem.productId);
+                                                Navigator.of(ctx).pop();
+                                              },
+                                              child: const Text('REMOVE'),
+                                              style: TextButton.styleFrom(
+                                                foregroundColor: Theme.of(context).colorScheme.error,
+                                              ),
+                                            ),
+                                          ],
+                                        ),
+                                      );
+                                    },
+                                  ),
+                                  IconButton(
                                     icon: const Icon(Icons.remove),
-                                    onPressed: () => cart.removeSingleItem(cartItem.productId),
+                                    onPressed: cart.canReduceQuantity(cartItem.productId) 
+                                      ? () => cart.removeSingleItem(cartItem.productId)
+                                      : null,
+                                    color: cart.canReduceQuantity(cartItem.productId) 
+                                      ? null 
+                                      : Colors.grey[400],
                                   ),
                                   Text('${cartItem.quantity}'),
                                   IconButton(
                                     icon: const Icon(Icons.add),
-                                    onPressed: () => cart.addItem(
+                                    onPressed: () => cart.addSingleItem(
                                       Provider.of<ProductsProvider>(context, listen: false).findById(cartItem.productId),
                                       negotiatedPrice: cartItem.isNegotiated ? cartItem.price : null,
                                     ),
