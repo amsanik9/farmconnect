@@ -14,9 +14,8 @@ class ProductsGrid extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final productsData = Provider.of<ProductsProvider>(context);
-    final products = showOnlyOrganic 
-        ? productsData.organicProducts 
-        : productsData.items;
+    final products =
+        showOnlyOrganic ? productsData.organicProducts : productsData.items;
 
     return products.isEmpty
         ? Center(
@@ -39,4 +38,4 @@ class ProductsGrid extends StatelessWidget {
             ),
           );
   }
-} 
+}

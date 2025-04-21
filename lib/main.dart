@@ -1,25 +1,31 @@
+import 'package:farmconnect/farmer/screens/products_screen.dart';
+import 'package:farmconnect/screens/role_selection_screen.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-
-import 'providers/products_provider.dart';
+import 'package:farmconnect/providers/products_provider.dart';
 import 'providers/cart_provider.dart';
 import 'providers/negotiations_provider.dart';
-import 'screens/products_overview_screen.dart';
-import 'screens/product_detail_screen.dart';
-import 'screens/cart_screen.dart';
-import 'screens/checkout_screen.dart';
-import 'screens/payment_screen.dart';
-import 'screens/order_confirmation_screen.dart';
-import 'screens/chat_screen.dart';
-import 'screens/chat_detail_screen.dart';
+import 'providers/language_provider.dart';
+import 'screens/welcome_screen.dart';
+import 'consumer/screens/products_overview_screen.dart';
+import 'consumer/screens/product_detail_screen.dart';
+import 'consumer/screens/cart_screen.dart';
+import 'consumer/screens/checkout_screen.dart';
+import 'consumer/screens/payment_screen.dart';
+import 'consumer/screens/order_confirmation_screen.dart';
+import 'consumer/screens/chat_screen.dart';
+import 'consumer/screens/chat_detail_screen.dart';
 import 'widgets/main_layout.dart';
+import 'package:farmconnect/farmer/widgets/farmer_layout.dart';
+import 'screens/farmer_login_screen.dart';
+import 'screens/farmer_registration_screen.dart';
 
 void main() {
   // Add error handling for Flutter framework errors
   FlutterError.onError = (FlutterErrorDetails details) {
     FlutterError.presentError(details);
   };
-  
+
   runApp(const MyApp());
 }
 
@@ -34,6 +40,9 @@ class MyApp extends StatelessWidget {
     return MultiProvider(
       providers: [
         ChangeNotifierProvider(
+          create: (ctx) => LanguageProvider(),
+        ),
+        ChangeNotifierProvider(
           create: (ctx) => ProductsProvider(),
         ),
         ChangeNotifierProvider(
@@ -46,7 +55,7 @@ class MyApp extends StatelessWidget {
       child: MaterialApp(
         title: 'FarmConnect',
         navigatorKey: navigatorKey, // Use the global navigator key
-      theme: ThemeData(
+        theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(
             seedColor: Colors.green,
             primary: Colors.green,
@@ -73,9 +82,13 @@ class MyApp extends StatelessWidget {
           ),
           useMaterial3: true,
         ),
-        home: const MainLayout(),
+        home: const RoleSelectionScreen(),
         routes: {
-          ProductsOverviewScreen.routeName: (ctx) => const ProductsOverviewScreen(),
+          '/farmer-login': (ctx) => const FarmerLoginScreen(),
+          FarmerRegistrationScreen.routeName: (ctx) =>
+              const FarmerRegistrationScreen(),
+          ProductsOverviewScreen.routeName: (ctx) =>
+              const ProductsOverviewScreen(),
           ProductDetailScreen.routeName: (ctx) => const ProductDetailScreen(),
           CartScreen.routeName: (ctx) => const CartScreen(),
           CheckoutScreen.routeName: (ctx) => const CheckoutScreen(),
@@ -108,7 +121,7 @@ class MyApp extends StatelessWidget {
                   ),
                 );
               }
-              
+
             case OrderConfirmationScreen.routeName:
               try {
                 final args = settings.arguments as Map<String, dynamic>?;
@@ -118,12 +131,14 @@ class MyApp extends StatelessWidget {
                     transactionId: args?['transactionId'] ?? '',
                     amount: args?['amount'] ?? 0.0,
                     customerEmail: args?['customerEmail'] ?? '',
-                    deliveryMethod: args?['deliveryMethod'] ?? 'Standard Delivery',
+                    deliveryMethod:
+                        args?['deliveryMethod'] ?? 'Standard Delivery',
                     estimatedDelivery: args?['estimatedDelivery'] ?? '',
                   ),
                 );
               } catch (e) {
-                print('Error in onGenerateRoute for OrderConfirmationScreen: $e');
+                print(
+                    'Error in onGenerateRoute for OrderConfirmationScreen: $e');
                 return MaterialPageRoute(
                   settings: settings,
                   builder: (ctx) => const OrderConfirmationScreen(
@@ -135,7 +150,7 @@ class MyApp extends StatelessWidget {
                   ),
                 );
               }
-              
+
             default:
               return null;
           }

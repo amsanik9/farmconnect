@@ -4,7 +4,7 @@ import 'package:cached_network_image/cached_network_image.dart';
 
 import '../models/product.dart';
 import '../providers/cart_provider.dart';
-import '../screens/product_detail_screen.dart';
+import '../consumer/screens/product_detail_screen.dart';
 
 class ProductItem extends StatelessWidget {
   final Product product;
@@ -96,7 +96,8 @@ class ProductItem extends StatelessWidget {
             // Product Info
             Flexible(
               child: Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: 10.0, vertical: 8.0),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   mainAxisSize: MainAxisSize.min,
@@ -121,12 +122,14 @@ class ProductItem extends StatelessWidget {
                     if (product.location.isNotEmpty)
                       Row(
                         children: [
-                          const Icon(Icons.location_on, size: 12, color: Colors.green),
+                          const Icon(Icons.location_on,
+                              size: 12, color: Colors.green),
                           const SizedBox(width: 2),
                           Expanded(
                             child: Text(
                               product.location,
-                              style: TextStyle(fontSize: 11, color: Colors.grey[600]),
+                              style: TextStyle(
+                                  fontSize: 11, color: Colors.grey[600]),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                             ),
@@ -150,8 +153,9 @@ class ProductItem extends StatelessWidget {
                               ),
                               Expanded(
                                 child: Text(
-                                  product.unit == 'dozen' ? ' / dozen' : 
-                                  ' / ${product.weight}${product.unit}',
+                                  product.unit == 'dozen'
+                                      ? ' / dozen'
+                                      : ' / ${product.weight}${product.unit}',
                                   style: TextStyle(
                                     fontSize: 11,
                                     color: Colors.grey[600],
@@ -176,7 +180,8 @@ class ProductItem extends StatelessWidget {
                             ScaffoldMessenger.of(context).hideCurrentSnackBar();
                             ScaffoldMessenger.of(context).showSnackBar(
                               SnackBar(
-                                content: Text('50 units of ${product.name} added to cart!'),
+                                content: Text(
+                                    '50 units of ${product.name} added to cart!'),
                                 duration: const Duration(seconds: 2),
                                 action: SnackBarAction(
                                   label: 'UNDO',

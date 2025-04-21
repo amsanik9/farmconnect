@@ -12,13 +12,13 @@ enum SortOption {
 
 class ProductsProvider with ChangeNotifier {
   List<Product> _items = [
-    // Demo products
     Product(
       id: 'p1',
       name: 'Fresh Tomatoes',
       description: 'Organic, locally grown tomatoes from Green Valley Farm.',
       price: 30,
-      imageUrl: 'https://images.unsplash.com/photo-1607305387299-a3d9611cd469?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      imageUrl:
+          'https://images.unsplash.com/photo-1607305387299-a3d9611cd469?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
       category: 'Vegetables',
       farmerId: 'f1',
       farmerName: 'Green Valley Farm',
@@ -32,7 +32,8 @@ class ProductsProvider with ChangeNotifier {
       name: 'Fresh Potatoes',
       description: 'Farm-fresh potatoes, perfect for roasting or mashing.',
       price: 12,
-      imageUrl: 'https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      imageUrl:
+          'https://images.unsplash.com/photo-1518977676601-b53f82aba655?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
       category: 'Vegetables',
       farmerId: 'f2',
       farmerName: 'Sunrise Farms',
@@ -46,7 +47,8 @@ class ProductsProvider with ChangeNotifier {
       name: 'Red Apples',
       description: 'Sweet and crunchy apples from local orchards.',
       price: 120,
-      imageUrl: 'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      imageUrl:
+          'https://images.unsplash.com/photo-1570913149827-d2ac84ab3f9a?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
       category: 'Fruits',
       farmerId: 'f3',
       farmerName: 'Orchard Hills',
@@ -60,7 +62,8 @@ class ProductsProvider with ChangeNotifier {
       name: 'Fresh Milk',
       description: 'Creamy, pasteurized milk from grass-fed cows.',
       price: 58,
-      imageUrl: 'https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      imageUrl:
+          'https://images.unsplash.com/photo-1563636619-e9143da7973b?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
       category: 'Dairy',
       farmerId: 'f4',
       farmerName: 'Meadow Dairy',
@@ -74,7 +77,8 @@ class ProductsProvider with ChangeNotifier {
       name: 'Free Range Eggs',
       description: 'Eggs from free-range hens raised on natural feed.',
       price: 100,
-      imageUrl: 'https://images.unsplash.com/photo-1598965675045-45c5e72c7d05?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      imageUrl:
+          'https://images.unsplash.com/photo-1598965675045-45c5e72c7d05?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
       category: 'Poultry',
       farmerId: 'f5',
       farmerName: 'Happy Hen Farm',
@@ -88,7 +92,8 @@ class ProductsProvider with ChangeNotifier {
       name: 'Organic Spinach',
       description: 'Fresh spinach leaves, locally grown without pesticides.',
       price: 170,
-      imageUrl: 'https://images.unsplash.com/photo-1576045057995-568f588f82fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
+      imageUrl:
+          'https://images.unsplash.com/photo-1576045057995-568f588f82fb?ixlib=rb-1.2.1&auto=format&fit=crop&w=800&q=80',
       category: 'Vegetables',
       farmerId: 'f1',
       farmerName: 'Green Valley Farm',
@@ -120,7 +125,7 @@ class ProductsProvider with ChangeNotifier {
 
   List<Product> _sortedItems() {
     List<Product> sortedList = [..._items];
-    
+
     switch (_currentSortOption) {
       case SortOption.nameAsc:
         sortedList.sort((a, b) => a.name.compareTo(b.name));
@@ -146,7 +151,7 @@ class ProductsProvider with ChangeNotifier {
         sortedList.sort((a, b) => b.id.compareTo(a.id));
         break;
     }
-    
+
     return sortedList;
   }
 

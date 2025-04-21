@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../providers/cart_provider.dart';
-import '../providers/products_provider.dart';
+import '../../providers/cart_provider.dart';
+import '../../providers/products_provider.dart';
 import 'checkout_screen.dart';
 
 class CartScreen extends StatelessWidget {
@@ -13,7 +13,7 @@ class CartScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final cart = Provider.of<CartProvider>(context);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Your Cart'),
@@ -56,7 +56,7 @@ class CartScreen extends StatelessWidget {
                         );
                         return;
                       }
-                      
+
                       // Navigate to checkout screen
                       Navigator.of(context).pushNamed(CheckoutScreen.routeName);
                     },
@@ -152,32 +152,33 @@ class CartScreen extends StatelessWidget {
                                         ),
                                       ),
                                     ),
-                                    errorWidget: (context, url, error) => 
-                                      Container(
-                                        width: 40,
-                                        height: 40,
-                                        color: Colors.grey[200],
-                                        child: const Icon(
-                                          Icons.image_not_supported,
-                                          size: 20,
-                                          color: Colors.grey,
-                                        ),
+                                    errorWidget: (context, url, error) =>
+                                        Container(
+                                      width: 40,
+                                      height: 40,
+                                      color: Colors.grey[200],
+                                      child: const Icon(
+                                        Icons.image_not_supported,
+                                        size: 20,
+                                        color: Colors.grey,
                                       ),
+                                    ),
                                   ),
                                 ),
                               ),
                               title: Text(cartItem.name),
                               subtitle: Text(
-                                cartItem.unit == 'dozen' ? 
-                                'Total: Rs. ${(cartItem.price * cartItem.quantity).toInt()} (${cartItem.quantity} dozen)' :
-                                'Total: Rs. ${(cartItem.price * cartItem.quantity).toInt()} (${cartItem.quantity} × ${cartItem.weight}${cartItem.unit})',
+                                cartItem.unit == 'dozen'
+                                    ? 'Total: Rs. ${(cartItem.price * cartItem.quantity).toInt()} (${cartItem.quantity} dozen)'
+                                    : 'Total: Rs. ${(cartItem.price * cartItem.quantity).toInt()} (${cartItem.quantity} × ${cartItem.weight}${cartItem.unit})',
                               ),
                               trailing: Row(
                                 mainAxisSize: MainAxisSize.min,
                                 children: [
                                   if (cartItem.isNegotiated)
                                     Container(
-                                      padding: const EdgeInsets.symmetric(horizontal: 6, vertical: 2),
+                                      padding: const EdgeInsets.symmetric(
+                                          horizontal: 6, vertical: 2),
                                       margin: const EdgeInsets.only(right: 8),
                                       decoration: BoxDecoration(
                                         color: Colors.green[100],
@@ -201,20 +202,26 @@ class CartScreen extends StatelessWidget {
                                         context: context,
                                         builder: (ctx) => AlertDialog(
                                           title: const Text('Remove Item'),
-                                          content: Text('Remove ${cartItem.name} from your cart?'),
+                                          content: Text(
+                                              'Remove ${cartItem.name} from your cart?'),
                                           actions: [
                                             TextButton(
-                                              onPressed: () => Navigator.of(ctx).pop(),
+                                              onPressed: () =>
+                                                  Navigator.of(ctx).pop(),
                                               child: const Text('CANCEL'),
                                             ),
                                             TextButton(
                                               onPressed: () {
-                                                cart.removeItem(cartItem.productId);
+                                                cart.removeItem(
+                                                    cartItem.productId);
                                                 Navigator.of(ctx).pop();
                                               },
                                               child: const Text('REMOVE'),
                                               style: TextButton.styleFrom(
-                                                foregroundColor: Theme.of(context).colorScheme.error,
+                                                foregroundColor:
+                                                    Theme.of(context)
+                                                        .colorScheme
+                                                        .error,
                                               ),
                                             ),
                                           ],
@@ -224,19 +231,26 @@ class CartScreen extends StatelessWidget {
                                   ),
                                   IconButton(
                                     icon: const Icon(Icons.remove),
-                                    onPressed: cart.canReduceQuantity(cartItem.productId) 
-                                      ? () => cart.removeSingleItem(cartItem.productId)
-                                      : null,
-                                    color: cart.canReduceQuantity(cartItem.productId) 
-                                      ? null 
-                                      : Colors.grey[400],
+                                    onPressed: cart.canReduceQuantity(
+                                            cartItem.productId)
+                                        ? () => cart.removeSingleItem(
+                                            cartItem.productId)
+                                        : null,
+                                    color: cart.canReduceQuantity(
+                                            cartItem.productId)
+                                        ? null
+                                        : Colors.grey[400],
                                   ),
                                   Text('${cartItem.quantity}'),
                                   IconButton(
                                     icon: const Icon(Icons.add),
                                     onPressed: () => cart.addSingleItem(
-                                      Provider.of<ProductsProvider>(context, listen: false).findById(cartItem.productId),
-                                      negotiatedPrice: cartItem.isNegotiated ? cartItem.price : null,
+                                      Provider.of<ProductsProvider>(context,
+                                              listen: false)
+                                          .findById(cartItem.productId),
+                                      negotiatedPrice: cartItem.isNegotiated
+                                          ? cartItem.price
+                                          : null,
                                     ),
                                   ),
                                 ],
@@ -252,4 +266,4 @@ class CartScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}

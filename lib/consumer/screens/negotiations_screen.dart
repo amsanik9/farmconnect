@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/negotiations_provider.dart';
+import '../../providers/negotiations_provider.dart';
 
 class NegotiationsScreen extends StatelessWidget {
   static const routeName = '/negotiations';
-  
+
   const NegotiationsScreen({Key? key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
     final negotiationsProvider = Provider.of<NegotiationsProvider>(context);
-    final activeNegotiations = negotiationsProvider.getNegotiationsByStatus('pending');
-    final acceptedNegotiations = negotiationsProvider.getNegotiationsByStatus('accepted');
-    final rejectedNegotiations = negotiationsProvider.getNegotiationsByStatus('rejected');
+    final activeNegotiations =
+        negotiationsProvider.getNegotiationsByStatus('pending');
+    final acceptedNegotiations =
+        negotiationsProvider.getNegotiationsByStatus('accepted');
+    final rejectedNegotiations =
+        negotiationsProvider.getNegotiationsByStatus('rejected');
 
     return DefaultTabController(
       length: 3,
@@ -41,7 +44,8 @@ class NegotiationsScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildNegotiationsList(List<Negotiation> negotiations, String status, BuildContext context) {
+  Widget _buildNegotiationsList(
+      List<Negotiation> negotiations, String status, BuildContext context) {
     if (negotiations.isEmpty) {
       return Center(
         child: Text(
@@ -75,7 +79,7 @@ class NegotiationItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    
+
     return Card(
       margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
       child: Padding(
@@ -260,4 +264,4 @@ class NegotiationItem extends StatelessWidget {
   String _formatDate(DateTime date) {
     return '${date.day}/${date.month}/${date.year}';
   }
-} 
+}

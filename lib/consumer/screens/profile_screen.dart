@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../screens/welcome_screen.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const routeName = '/profile';
@@ -247,7 +248,7 @@ class ProfileScreen extends StatelessWidget {
             title: 'Logout',
             textColor: Colors.red,
             onTap: () {
-              // Logout
+              // Show confirmation dialog
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
@@ -255,23 +256,26 @@ class ProfileScreen extends StatelessWidget {
                   content: const Text('Are you sure you want to logout?'),
                   actions: [
                     TextButton(
-                      onPressed: () => Navigator.of(ctx).pop(),
+                      onPressed: () {
+                        Navigator.of(ctx).pop(); // Close dialog
+                      },
                       child: const Text('Cancel'),
                     ),
                     TextButton(
                       onPressed: () {
-                        Navigator.of(ctx).pop();
-                        // Perform logout
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          const SnackBar(
-                            content: Text('Logout feature coming soon!'),
+                        Navigator.of(ctx).pop(); // Close dialog
+                        // Navigate to welcome screen and clear all routes
+                        Navigator.of(context).pushAndRemoveUntil(
+                          MaterialPageRoute(
+                            builder: (context) => const WelcomeScreen(),
                           ),
+                          (route) => false, // Remove all routes
                         );
                       },
-                      child: const Text(
-                        'Logout',
-                        style: TextStyle(color: Colors.red),
+                      style: TextButton.styleFrom(
+                        foregroundColor: Colors.red,
                       ),
+                      child: const Text('Logout'),
                     ),
                   ],
                 ),
@@ -309,4 +313,4 @@ class ProfileScreen extends StatelessWidget {
       onTap: onTap,
     );
   }
-} 
+}

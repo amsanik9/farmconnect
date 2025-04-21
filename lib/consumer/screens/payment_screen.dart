@@ -2,13 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:provider/provider.dart';
 
-import '../providers/cart_provider.dart';
-import '../services/payment_service.dart';
+import '../../providers/cart_provider.dart';
+import '../../services/payment_service.dart';
 import 'order_confirmation_screen.dart';
 
 class PaymentScreen extends StatefulWidget {
   static const routeName = '/payment';
-  
+
   final double totalAmount;
   final String customerEmail;
   final String deliveryMethod;
@@ -43,7 +43,7 @@ class PaymentScreenArguments {
   static PaymentScreenArguments fromRoute(RouteSettings settings) {
     // Handle the case when arguments are null
     final args = settings.arguments as Map<String, dynamic>?;
-    
+
     if (args == null) {
       // Return default values if no arguments provided
       return PaymentScreenArguments(
@@ -53,7 +53,7 @@ class PaymentScreenArguments {
         deliveryCharge: 5.0,
       );
     }
-    
+
     return PaymentScreenArguments(
       totalAmount: args['totalAmount'] ?? 0.0,
       customerEmail: args['customerEmail'] ?? '',
@@ -66,29 +66,29 @@ class PaymentScreenArguments {
 class _PaymentScreenState extends State<PaymentScreen> {
   final _formKey = GlobalKey<FormState>();
   bool _isLoading = false;
-  
+
   // Card details
   String _cardNumber = '';
   String _expiryMonth = '';
   String _expiryYear = '';
   String _cvc = '';
   String _cardHolderName = '';
-  
+
   // Payment result
   String _paymentResult = '';
   bool _paymentSuccess = false;
 
   // Card type
   String _cardType = '';
-  
+
   // Arguments from route
   PaymentScreenArguments _arguments = PaymentScreenArguments(
-    totalAmount: 0.0, 
-    customerEmail: '', 
+    totalAmount: 0.0,
+    customerEmail: '',
     deliveryMethod: 'Standard',
     deliveryCharge: 5.0,
   );
-  
+
   @override
   void initState() {
     super.initState();
@@ -100,7 +100,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       deliveryCharge: widget.deliveryCharge,
     );
   }
-  
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -116,7 +116,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       print('Error in didChangeDependencies: $e');
     }
   }
-  
+
   @override
   void dispose() {
     // Make sure we clean up properly
@@ -140,10 +140,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
   // Format card number with spaces
   String _formatCardNumber(String input) {
     if (input.isEmpty) return '';
-    
+
     // Remove all non-digits
     String digits = input.replaceAll(RegExp(r'\D'), '');
-    
+
     // Format based on card type
     String formatted = '';
     if (_cardType == 'American Express') {
@@ -159,7 +159,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
         formatted += digits[i];
       }
     }
-    
+
     return formatted;
   }
 
@@ -191,10 +191,10 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
   Widget _buildPaymentForm() {
     // Use either the arguments or widget property, whichever is available
-    final totalAmount = _arguments.totalAmount > 0 
-        ? _arguments.totalAmount 
+    final totalAmount = _arguments.totalAmount > 0
+        ? _arguments.totalAmount
         : widget.totalAmount;
-        
+
     return Padding(
       padding: const EdgeInsets.all(16.0),
       child: Form(
@@ -235,14 +235,14 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ),
               ),
               const SizedBox(height: 20),
-              
+
               // Card Details
               Text(
                 'Card Details',
                 style: Theme.of(context).textTheme.titleLarge,
               ),
               const SizedBox(height: 16),
-              
+
               // Card Number
               TextFormField(
                 decoration: InputDecoration(
@@ -281,7 +281,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 },
               ),
               const SizedBox(height: 16),
-              
+
               // Expiry Date and CVC
               Row(
                 children: [
@@ -373,7 +373,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                 ],
               ),
               const SizedBox(height: 16),
-              
+
               // Cardholder Name
               TextFormField(
                 decoration: const InputDecoration(
@@ -394,7 +394,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   return null;
                 },
               ),
-              
+
               // Error message
               if (_paymentResult.isNotEmpty && !_paymentSuccess)
                 Padding(
@@ -407,9 +407,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     ),
                   ),
                 ),
-              
+
               const SizedBox(height: 30),
-              
+
               // Pay Button
               SizedBox(
                 width: double.infinity,
@@ -422,9 +422,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ),
                 ),
               ),
-              
+
               const SizedBox(height: 16),
-              
+
               // Secure payment note
               Center(
                 child: Row(
@@ -439,9 +439,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   ],
                 ),
               ),
-              
+
               const SizedBox(height: 10),
-              
+
               // Accepted cards
               Center(
                 child: Wrap(
@@ -449,8 +449,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
                   children: [
                     Text('Accepted Cards:',
                         style: TextStyle(color: Colors.grey[600])),
-                    Text('Visa',
-                        style: TextStyle(fontWeight: FontWeight.bold)),
+                    Text('Visa', style: TextStyle(fontWeight: FontWeight.bold)),
                     Text('MasterCard',
                         style: TextStyle(fontWeight: FontWeight.bold)),
                     Text('American Express',
@@ -475,7 +474,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       try {
         // Simulate a brief delay for payment processing
         await Future.delayed(const Duration(seconds: 2));
-        
+
         // Process payment using our payment service
         final result = await PaymentService.processPayment(
           amount: _arguments.totalAmount.toString(),
@@ -494,21 +493,25 @@ class _PaymentScreenState extends State<PaymentScreen> {
 
         if (result['success'] && mounted) {
           // Navigate to confirmation screen
-          String deliveryMethodText = _arguments.deliveryMethod == 'Standard' 
-              ? 'Standard Delivery' 
+          String deliveryMethodText = _arguments.deliveryMethod == 'Standard'
+              ? 'Standard Delivery'
               : 'Express Delivery';
-              
-          String estimatedDelivery = DateTime.now().add(
-              Duration(days: _arguments.deliveryMethod == 'Standard' ? 3 : 1)
-          ).toString().substring(0, 10);
-          
+
+          String estimatedDelivery = DateTime.now()
+              .add(Duration(
+                  days: _arguments.deliveryMethod == 'Standard' ? 3 : 1))
+              .toString()
+              .substring(0, 10);
+
           // Use a push replacement to avoid stacking routes
           Navigator.of(context).pushReplacementNamed(
             OrderConfirmationScreen.routeName,
             arguments: {
               'transactionId': result['transaction_id'],
               'amount': _arguments.totalAmount,
-              'customerEmail': _arguments.customerEmail.isNotEmpty ? _arguments.customerEmail : _cardHolderName + '@example.com',
+              'customerEmail': _arguments.customerEmail.isNotEmpty
+                  ? _arguments.customerEmail
+                  : _cardHolderName + '@example.com',
               'deliveryMethod': deliveryMethodText,
               'estimatedDelivery': estimatedDelivery,
             },
@@ -530,4 +533,4 @@ class _PaymentScreenState extends State<PaymentScreen> {
       }
     }
   }
-} 
+}

@@ -1,24 +1,26 @@
 import 'package:flutter/material.dart';
-import '../consumer/screens/products_overview_screen.dart';
-import '../consumer/screens/negotiations_screen.dart';
-import '../consumer/screens/chat_screen.dart';
-import '../consumer/screens/profile_screen.dart';
+import '../screens/dashboard_screen.dart';
+import '../screens/products_screen.dart';
+import '../screens/orders_screen.dart';
+import '../screens/profiles_screen.dart';
 
-class MainLayout extends StatefulWidget {
-  const MainLayout({Key? key}) : super(key: key);
+class FarmerLayout extends StatefulWidget {
+  static const routeName = '/farmer-layout';
+
+  const FarmerLayout({Key? key}) : super(key: key);
 
   @override
-  State<MainLayout> createState() => _MainLayoutState();
+  State<FarmerLayout> createState() => _FarmerLayoutState();
 }
 
-class _MainLayoutState extends State<MainLayout> {
+class _FarmerLayoutState extends State<FarmerLayout> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const ProductsOverviewScreen(),
-    const NegotiationsScreen(),
-    const ChatScreen(),
-    const ProfileScreen(),
+    const DashboardScreen(),
+    const ProductsScreen(),
+    const OrdersScreen(),
+    ProfileScreen(), // Profile Screen
   ];
 
   void _onItemTapped(int index) {
@@ -39,16 +41,16 @@ class _MainLayoutState extends State<MainLayout> {
         onTap: _onItemTapped,
         items: const [
           BottomNavigationBarItem(
-            icon: Icon(Icons.home),
-            label: 'Home',
+            icon: Icon(Icons.dashboard),
+            label: 'Dashboard',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.handshake),
-            label: 'Negotiations',
+            icon: Icon(Icons.inventory),
+            label: 'Products',
           ),
           BottomNavigationBarItem(
-            icon: Icon(Icons.chat),
-            label: 'Chat',
+            icon: Icon(Icons.shopping_bag),
+            label: 'Orders',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.person),

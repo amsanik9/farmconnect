@@ -1,15 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../models/product.dart';
-import '../providers/cart_provider.dart';
-import '../providers/negotiations_provider.dart';
+import '../../models/product.dart';
+import '../../providers/cart_provider.dart';
+import '../../providers/negotiations_provider.dart';
 import 'cart_screen.dart';
 import 'chat_detail_screen.dart';
 
 class ProductDetailScreen extends StatefulWidget {
   static const routeName = '/product-detail';
-  
+
   const ProductDetailScreen({Key? key}) : super(key: key);
 
   @override
@@ -40,10 +40,11 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
     if (_negotiationFormKey.currentState!.validate()) {
       // Access the product and negotiations provider
       final product = ModalRoute.of(context)!.settings.arguments as Product;
-      final negotiationsProvider = Provider.of<NegotiationsProvider>(context, listen: false);
+      final negotiationsProvider =
+          Provider.of<NegotiationsProvider>(context, listen: false);
       final offeredPrice = double.parse(_priceController.text);
       final responseTimeHours = _selectedTimeLimit == '12 hours' ? 12 : 24;
-      
+
       // Add the negotiation to the provider
       negotiationsProvider.addNegotiation(
         productId: product.id,
@@ -96,7 +97,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
   Widget build(BuildContext context) {
     final product = ModalRoute.of(context)!.settings.arguments as Product;
     final cart = Provider.of<CartProvider>(context, listen: false);
-    
+
     return Scaffold(
       appBar: AppBar(
         title: Text(product.name),
@@ -163,7 +164,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                   ),
               ],
             ),
-            
+
             // Product information section
             Padding(
               padding: const EdgeInsets.all(16.0),
@@ -186,9 +187,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                             const SizedBox(height: 4),
                             Text(
-                              product.unit == 'dozen' ? 
-                              'Rs. ${product.price.toInt()} / dozen' : 
-                              'Rs. ${product.price.toInt()} / ${product.weight}${product.unit}',
+                              product.unit == 'dozen'
+                                  ? 'Rs. ${product.price.toInt()} / dozen'
+                                  : 'Rs. ${product.price.toInt()} / ${product.weight}${product.unit}',
                               style: const TextStyle(
                                 fontSize: 18,
                                 fontWeight: FontWeight.bold,
@@ -204,7 +205,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                           ScaffoldMessenger.of(context).hideCurrentSnackBar();
                           ScaffoldMessenger.of(context).showSnackBar(
                             SnackBar(
-                              content: Text('50 units of ${product.name} added to cart!'),
+                              content: Text(
+                                  '50 units of ${product.name} added to cart!'),
                               duration: const Duration(seconds: 2),
                               action: SnackBarAction(
                                 label: 'UNDO',
@@ -218,12 +220,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                         icon: const Icon(Icons.shopping_cart),
                         label: const Text('Add to Cart'),
                         style: ElevatedButton.styleFrom(
-                          padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 12),
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 20, vertical: 12),
                         ),
                       ),
                     ],
                   ),
-                  
+
                   const SizedBox(height: 20),
 
                   // Negotiation section
@@ -275,11 +278,13 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   padding: const EdgeInsets.all(16.0),
                                   child: Column(
                                     children: [
-                                      const Icon(Icons.access_time, color: Colors.orange),
+                                      const Icon(Icons.access_time,
+                                          color: Colors.orange),
                                       const SizedBox(height: 8),
                                       const Text(
                                         'Negotiation in progress',
-                                        style: TextStyle(fontWeight: FontWeight.bold),
+                                        style: TextStyle(
+                                            fontWeight: FontWeight.bold),
                                       ),
                                       const SizedBox(height: 8),
                                       const Text(
@@ -353,7 +358,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                   ),
                                   const SizedBox(height: 16),
                                   Row(
-                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    mainAxisAlignment:
+                                        MainAxisAlignment.spaceBetween,
                                     children: [
                                       OutlinedButton(
                                         onPressed: _toggleNegotiationForm,
@@ -376,14 +382,14 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Rating Section
                   _buildRatingSection(),
-                  
+
                   const SizedBox(height: 20),
-                  
+
                   // Description Section
                   const Text(
                     'Description',
@@ -401,9 +407,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       height: 1.5,
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Seller Section
                   const Text(
                     'Seller Information',
@@ -457,7 +463,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                                 if (product.location.isNotEmpty)
                                   Row(
                                     children: [
-                                      const Icon(Icons.location_on, size: 16, color: Colors.green),
+                                      const Icon(Icons.location_on,
+                                          size: 16, color: Colors.green),
                                       const SizedBox(width: 4),
                                       Text(
                                         product.location,
@@ -471,7 +478,8 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                             ),
                           ),
                           IconButton(
-                            icon: const Icon(Icons.message_outlined, color: Colors.green),
+                            icon: const Icon(Icons.message_outlined,
+                                color: Colors.green),
                             onPressed: () {
                               // Contact seller functionality
                               Navigator.of(context).push(
@@ -488,9 +496,9 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
                       ),
                     ),
                   ),
-                  
+
                   const SizedBox(height: 24),
-                  
+
                   // Reviews Section
                   _buildReviewsSection(),
                 ],
@@ -501,22 +509,24 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
-  
+
   Widget _buildRatingSection() {
     // Mock ratings data
     final rating = 4.5;
     final ratingCount = 28;
-    
+
     return Row(
       children: [
         Row(
           children: List.generate(5, (index) {
             if (index < rating.floor()) {
               return const Icon(Icons.star, color: Colors.amber, size: 22);
-            } else if (index < rating.ceil() && rating.truncateToDouble() != rating) {
+            } else if (index < rating.ceil() &&
+                rating.truncateToDouble() != rating) {
               return const Icon(Icons.star_half, color: Colors.amber, size: 22);
             } else {
-              return const Icon(Icons.star_border, color: Colors.amber, size: 22);
+              return const Icon(Icons.star_border,
+                  color: Colors.amber, size: 22);
             }
           }),
         ),
@@ -531,7 +541,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ],
     );
   }
-  
+
   Widget _buildReviewsSection() {
     // Mock reviews
     final reviews = [
@@ -539,22 +549,25 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
         'name': 'John Smith',
         'rating': 5,
         'date': '2023-05-15',
-        'comment': 'Excellent quality! The produce was fresh and flavorful. Will definitely buy again.',
+        'comment':
+            'Excellent quality! The produce was fresh and flavorful. Will definitely buy again.',
       },
       {
         'name': 'Alice Johnson',
         'rating': 4,
         'date': '2023-04-28',
-        'comment': 'Very good quality and value for money. Delivery was a bit delayed.',
+        'comment':
+            'Very good quality and value for money. Delivery was a bit delayed.',
       },
       {
         'name': 'Robert Brown',
         'rating': 5,
         'date': '2023-04-10',
-        'comment': 'Outstanding freshness! You can really taste the difference with organic products.',
+        'comment':
+            'Outstanding freshness! You can really taste the difference with organic products.',
       },
     ];
-    
+
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -586,7 +599,7 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ],
     );
   }
-  
+
   Widget _buildReviewItem(Map<String, dynamic> review) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 16.0),
@@ -636,4 +649,4 @@ class _ProductDetailScreenState extends State<ProductDetailScreen> {
       ),
     );
   }
-} 
+}

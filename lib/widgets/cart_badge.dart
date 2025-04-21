@@ -51,4 +51,4 @@ class CartBadge extends StatelessWidget {
       ],
     );
   }
-} 
+}

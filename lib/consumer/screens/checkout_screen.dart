@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
-import '../providers/cart_provider.dart';
+import '../../providers/cart_provider.dart';
 import 'payment_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -35,8 +35,9 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   double _expressDeliveryCharge = 10.0;
 
   // Get the current delivery charge based on selected method
-  double get _deliveryCharge => 
-      _deliveryMethod == 'Standard' ? _standardDeliveryCharge : _expressDeliveryCharge;
+  double get _deliveryCharge => _deliveryMethod == 'Standard'
+      ? _standardDeliveryCharge
+      : _expressDeliveryCharge;
 
   @override
   void dispose() {
@@ -57,7 +58,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
       arguments: {
         'totalAmount':
             Provider.of<CartProvider>(context, listen: false).totalAmount +
-            _deliveryCharge,
+                _deliveryCharge,
         'customerEmail': _emailController.text,
         'deliveryMethod': _deliveryMethod,
         'deliveryCharge': _deliveryCharge,
@@ -186,38 +187,36 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
                     fit: BoxFit.cover,
                     width: 30,
                     height: 30,
-                    placeholder:
-                        (context, url) => Container(
-                          width: 30,
-                          height: 30,
-                          color: Colors.grey[100],
-                          child: const Center(
-                            child: SizedBox(
-                              width: 15,
-                              height: 15,
-                              child: CircularProgressIndicator(strokeWidth: 2),
-                            ),
-                          ),
+                    placeholder: (context, url) => Container(
+                      width: 30,
+                      height: 30,
+                      color: Colors.grey[100],
+                      child: const Center(
+                        child: SizedBox(
+                          width: 15,
+                          height: 15,
+                          child: CircularProgressIndicator(strokeWidth: 2),
                         ),
-                    errorWidget:
-                        (context, url, error) => Container(
-                          width: 30,
-                          height: 30,
-                          color: Colors.grey[200],
-                          child: const Icon(
-                            Icons.image_not_supported,
-                            size: 15,
-                            color: Colors.grey,
-                          ),
-                        ),
+                      ),
+                    ),
+                    errorWidget: (context, url, error) => Container(
+                      width: 30,
+                      height: 30,
+                      color: Colors.grey[200],
+                      child: const Icon(
+                        Icons.image_not_supported,
+                        size: 15,
+                        color: Colors.grey,
+                      ),
+                    ),
                   ),
                 ),
               ),
               title: Text(cartItem.name),
               subtitle: Text(
-                cartItem.unit == 'dozen' ? 
-                '${cartItem.quantity} × Rs. ${cartItem.price.toInt()} / dozen' :
-                '${cartItem.quantity} × Rs. ${cartItem.price.toInt()} / ${cartItem.weight}${cartItem.unit}',
+                cartItem.unit == 'dozen'
+                    ? '${cartItem.quantity} × Rs. ${cartItem.price.toInt()} / dozen'
+                    : '${cartItem.quantity} × Rs. ${cartItem.price.toInt()} / ${cartItem.weight}${cartItem.unit}',
               ),
               trailing: Text(
                 'Rs. ${(cartItem.price * cartItem.quantity).toInt()}',

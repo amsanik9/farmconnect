@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
-import '../providers/cart_provider.dart';
+import '../../providers/cart_provider.dart';
 
 class OrderConfirmationScreen extends StatelessWidget {
   static const routeName = '/order-confirmation';
-  
+
   final String transactionId;
   final double amount;
   final String customerEmail;
@@ -26,14 +26,14 @@ class OrderConfirmationScreen extends StatelessWidget {
     Future.delayed(Duration.zero, () {
       Provider.of<CartProvider>(context, listen: false).clear();
     });
-    
+
     // Debug - print received values
     print('OrderConfirmation - Amount: $amount');
     print('OrderConfirmation - Email: $customerEmail');
     print('OrderConfirmation - TransactionID: $transactionId');
     print('OrderConfirmation - DeliveryMethod: $deliveryMethod');
     print('OrderConfirmation - EstimatedDelivery: $estimatedDelivery');
-    
+
     return PopScope(
       // Prevent back button from going back to payment screen
       canPop: false,
@@ -74,21 +74,21 @@ class OrderConfirmationScreen extends StatelessWidget {
                 Text(
                   'Thank You for Your Order!',
                   style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                    fontWeight: FontWeight.bold,
-                    color: Colors.green.shade700,
-                  ),
+                        fontWeight: FontWeight.bold,
+                        color: Colors.green.shade700,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 10),
                 Text(
                   'Your order has been confirmed and will be shipped soon.',
                   style: Theme.of(context).textTheme.titleMedium?.copyWith(
-                    color: Colors.grey.shade700,
-                  ),
+                        color: Colors.grey.shade700,
+                      ),
                   textAlign: TextAlign.center,
                 ),
                 const SizedBox(height: 30),
-                
+
                 // Order details card
                 Card(
                   elevation: 4,
@@ -132,15 +132,20 @@ class OrderConfirmationScreen extends StatelessWidget {
                         const Divider(),
                         _buildDetailRow('Transaction ID', transactionId),
                         _buildDetailRow('Amount', 'Rs. ${amount.toInt()}'),
-                        _buildDetailRow('Email', customerEmail.isEmpty ? 'Not provided' : customerEmail),
+                        _buildDetailRow(
+                            'Email',
+                            customerEmail.isEmpty
+                                ? 'Not provided'
+                                : customerEmail),
                         _buildDetailRow('Delivery Method', deliveryMethod),
-                        _buildDetailRow('Estimated Delivery', estimatedDelivery),
+                        _buildDetailRow(
+                            'Estimated Delivery', estimatedDelivery),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 30),
-                
+
                 // Tracking info
                 Card(
                   elevation: 4,
@@ -160,27 +165,18 @@ class OrderConfirmationScreen extends StatelessWidget {
                           ),
                         ),
                         const SizedBox(height: 15),
-                        _buildStepRow(
-                          1, 
-                          'Order Processing', 
-                          'We\'re preparing your order for shipment.'
-                        ),
-                        _buildStepRow(
-                          2, 
-                          'Order Shipped', 
-                          'Your order will be shipped within 24-48 hours.'
-                        ),
-                        _buildStepRow(
-                          3, 
-                          'Order Delivery', 
-                          'Your order will be delivered to your address.'
-                        ),
+                        _buildStepRow(1, 'Order Processing',
+                            'We\'re preparing your order for shipment.'),
+                        _buildStepRow(2, 'Order Shipped',
+                            'Your order will be shipped within 24-48 hours.'),
+                        _buildStepRow(3, 'Order Delivery',
+                            'Your order will be delivered to your address.'),
                       ],
                     ),
                   ),
                 ),
                 const SizedBox(height: 30),
-                
+
                 // Return to home button
                 SizedBox(
                   width: double.infinity,
@@ -203,7 +199,7 @@ class OrderConfirmationScreen extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildDetailRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
@@ -228,7 +224,7 @@ class OrderConfirmationScreen extends StatelessWidget {
       ),
     );
   }
-  
+
   Widget _buildStepRow(int step, String title, String description) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 15.0),
@@ -278,4 +274,4 @@ class OrderConfirmationScreen extends StatelessWidget {
       ),
     );
   }
-} 
+}
