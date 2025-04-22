@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/orders_provider.dart';
+import '../../providers/wallet_provider.dart';
+import '../../widgets/main_layout.dart';
 
 class OrderConfirmationScreen extends StatelessWidget {
   static const routeName = '/order-confirmation';
@@ -22,9 +25,42 @@ class OrderConfirmationScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Clear the cart
+    // Save order, add loyalty points, and clear the cart
     Future.delayed(Duration.zero, () {
-      Provider.of<CartProvider>(context, listen: false).clear();
+      final cartProvider = Provider.of<CartProvider>(context, listen: false);
+      final ordersProvider = Provider.of<OrdersProvider>(context, listen: false);
+      final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+      
+      // Generate a shorter order ID for display
+      final orderId = DateTime.now().millisecondsSinceEpoch.toString().substring(9, 13);
+      
+      // Save the order
+      ordersProvider.addOrder(
+        cartProvider.items.values.toList(), 
+        amount, 
+        deliveryMethod.contains('Cash') ? 'Cash on Delivery' : 'Credit Card',
+        'Default Address, Mumbai, Maharashtra', // In a real app, this would be from user profile
+        transactionId,
+        estimatedDelivery,
+      );
+      
+      // Add loyalty points to wallet (5 points for every Rs. 50)
+      walletProvider.addPoints(amount, orderId);
+      
+      // Calculate earned points for display
+      final earnedPoints = (amount / 50) * 5;
+      
+      // Show loyalty points earned toast
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('You earned ${earnedPoints.toStringAsFixed(1)} loyalty points!'),
+          backgroundColor: Colors.green,
+          duration: const Duration(seconds: 3),
+        ),
+      );
+      
+      // Clear the cart
+      cartProvider.clear();
     });
 
     // Debug - print received values
@@ -39,7 +75,11 @@ class OrderConfirmationScreen extends StatelessWidget {
       canPop: false,
       onPopInvoked: (didPop) {
         if (!didPop) {
-          Navigator.of(context).popUntil((route) => route.isFirst);
+          // Navigate to consumer home
+          Navigator.of(context).pushAndRemoveUntil(
+            MaterialPageRoute(builder: (context) => const MainLayout()),
+            (route) => false,
+          );
         }
       },
       child: Scaffold(
@@ -183,7 +223,11 @@ class OrderConfirmationScreen extends StatelessWidget {
                   height: 50,
                   child: ElevatedButton(
                     onPressed: () {
-                      Navigator.of(context).popUntil((route) => route.isFirst);
+                      // Navigate to consumer home
+                      Navigator.of(context).pushAndRemoveUntil(
+                        MaterialPageRoute(builder: (context) => const MainLayout()),
+                        (route) => false,
+                      );
                     },
                     child: const Text(
                       'Continue Shopping',

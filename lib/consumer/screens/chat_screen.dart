@@ -132,14 +132,13 @@ class ChatScreen extends StatelessWidget {
           ],
         ),
         onTap: () {
-          // Navigate to conversation
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (ctx) => ChatDetailScreen(
-                farmerName: chats[i]['name'] as String,
-                productName: chats[i]['productName'] as String,
-              ),
-            ),
+          // Navigate to conversation using named route
+          Navigator.of(context).pushNamed(
+            ChatDetailScreen.routeName,
+            arguments: {
+              'farmerName': chats[i]['name'] as String,
+              'productName': chats[i]['productName'] as String,
+            },
           );
         },
       ),

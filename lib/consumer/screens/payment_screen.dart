@@ -13,6 +13,7 @@ class PaymentScreen extends StatefulWidget {
   final String customerEmail;
   final String deliveryMethod;
   final double deliveryCharge;
+  final double pointsRedeemed;
 
   const PaymentScreen({
     Key? key,
@@ -20,6 +21,7 @@ class PaymentScreen extends StatefulWidget {
     required this.customerEmail,
     required this.deliveryMethod,
     required this.deliveryCharge,
+    this.pointsRedeemed = 0.0,
   }) : super(key: key);
 
   @override
@@ -32,12 +34,14 @@ class PaymentScreenArguments {
   final String customerEmail;
   final String deliveryMethod;
   final double deliveryCharge;
+  final double pointsRedeemed;
 
   PaymentScreenArguments({
     required this.totalAmount,
     required this.customerEmail,
     required this.deliveryMethod,
     required this.deliveryCharge,
+    this.pointsRedeemed = 0.0,
   });
 
   static PaymentScreenArguments fromRoute(RouteSettings settings) {
@@ -51,6 +55,7 @@ class PaymentScreenArguments {
         customerEmail: '',
         deliveryMethod: 'Standard',
         deliveryCharge: 5.0,
+        pointsRedeemed: 0.0,
       );
     }
 
@@ -59,6 +64,7 @@ class PaymentScreenArguments {
       customerEmail: args['customerEmail'] ?? '',
       deliveryMethod: args['deliveryMethod'] ?? 'Standard',
       deliveryCharge: args['deliveryCharge'] ?? 5.0,
+      pointsRedeemed: args['pointsRedeemed'] ?? 0.0,
     );
   }
 }
@@ -87,6 +93,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
     customerEmail: '',
     deliveryMethod: 'Standard',
     deliveryCharge: 5.0,
+    pointsRedeemed: 0.0,
   );
 
   @override
@@ -98,6 +105,7 @@ class _PaymentScreenState extends State<PaymentScreen> {
       customerEmail: widget.customerEmail,
       deliveryMethod: widget.deliveryMethod,
       deliveryCharge: widget.deliveryCharge,
+      pointsRedeemed: widget.pointsRedeemed,
     );
   }
 
@@ -194,6 +202,13 @@ class _PaymentScreenState extends State<PaymentScreen> {
     final totalAmount = _arguments.totalAmount > 0
         ? _arguments.totalAmount
         : widget.totalAmount;
+    
+    final pointsRedeemed = _arguments.pointsRedeemed > 0
+        ? _arguments.pointsRedeemed
+        : widget.pointsRedeemed;
+    
+    // Calculate subtotal (before points redemption)
+    final subtotal = totalAmount + pointsRedeemed;
 
     return Padding(
       padding: const EdgeInsets.all(16.0),
@@ -206,6 +221,9 @@ class _PaymentScreenState extends State<PaymentScreen> {
               // Order Summary
               Card(
                 elevation: 4,
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                ),
                 child: Padding(
                   padding: const EdgeInsets.all(16.0),
                   child: Column(
@@ -213,20 +231,58 @@ class _PaymentScreenState extends State<PaymentScreen> {
                     children: [
                       Text(
                         'Order Summary',
-                        style: Theme.of(context).textTheme.titleLarge,
+                        style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                              fontWeight: FontWeight.bold,
+                            ),
                       ),
-                      const SizedBox(height: 8),
+                      const Divider(),
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          const Text('Total Amount:'),
-                          Text(
-                            'Rs. ${totalAmount.toInt()}',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: Colors.green,
+                          const Text('Subtotal:'),
+                          Text('₹${(subtotal - _arguments.deliveryCharge).toStringAsFixed(2)}'),
+                        ],
+                      ),
+                      const SizedBox(height: 4),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text('Delivery (${_arguments.deliveryMethod}):'),
+                          Text('₹${_arguments.deliveryCharge.toStringAsFixed(2)}'),
+                        ],
+                      ),
+                      if (pointsRedeemed > 0) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Loyalty Points Applied:',
+                              style: TextStyle(color: Colors.green),
                             ),
+                            Text(
+                              '-₹${pointsRedeemed.toStringAsFixed(2)}',
+                              style: const TextStyle(color: Colors.green),
+                            ),
+                          ],
+                        ),
+                      ],
+                      const Divider(),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Total to Pay:',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                ),
+                          ),
+                          Text(
+                            '₹${totalAmount.toStringAsFixed(2)}',
+                            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                                  fontWeight: FontWeight.bold,
+                                  color: Theme.of(context).colorScheme.primary,
+                                ),
                           ),
                         ],
                       ),

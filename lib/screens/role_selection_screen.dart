@@ -5,6 +5,8 @@ import '../providers/language_provider.dart';
 import '../widgets/custom_app_bar.dart';
 import '../widgets/main_layout.dart';
 import '../farmer/widgets/farmer_layout.dart';
+import '../l10n/app_localizations.dart';
+import '../screens/farmer_registration_screen.dart';
 
 class RoleSelectionScreen extends StatefulWidget {
   const RoleSelectionScreen({super.key});
@@ -93,6 +95,159 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
     super.dispose();
   }
 
+  @override
+  Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    
+    return Scaffold(
+      appBar: CustomAppBar(
+        title: appLocalizations.selectRole,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.all(16.0),
+        children: [
+          _buildRoleCard(
+            role: 'Farmer',
+            icon: Icons.agriculture,
+            title: appLocalizations.farmer,
+            appLocalizations: appLocalizations,
+          ),
+          const SizedBox(height: 16),
+          _buildRoleCard(
+            role: 'Consumer',
+            icon: Icons.shopping_cart,
+            title: appLocalizations.consumer,
+            appLocalizations: appLocalizations,
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildRoleCard({
+    required String role,
+    required IconData icon,
+    required String title,
+    required AppLocalizations appLocalizations,
+  }) {
+    return Card(
+      elevation: 4,
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(16.0),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            RadioListTile<String>(
+              title: Row(
+                children: [
+                  Icon(
+                    icon,
+                    color: Colors.green,
+                    size: 32,
+                  ),
+                  const SizedBox(width: 16),
+                  Text(
+                    title,
+                    style: const TextStyle(
+                      fontSize: 22,
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                ],
+              ),
+              value: role,
+              groupValue: _selectedRole,
+              onChanged: (String? value) {
+                setState(() {
+                  _selectedRole = value;
+                  if (value != 'Farmer') {
+                    _showFarmerOtpField = false;
+                    _showFarmerVerifyButton = false;
+                  } else {
+                    _showConsumerOtpField = false;
+                    _showConsumerVerifyButton = false;
+                  }
+                });
+              },
+              activeColor: Colors.green,
+              controlAffinity: ListTileControlAffinity.trailing,
+            ),
+            if (_selectedRole == role) ...[
+              const SizedBox(height: 16),
+              if (role == 'Farmer') ...[
+                Row(
+                  children: [
+                    Expanded(
+                      child: ElevatedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, '/farmer-login');
+                        },
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: Colors.green,
+                          foregroundColor: Colors.white,
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: Text(
+                          appLocalizations.login,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(width: 16),
+                    Expanded(
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.pushNamed(context, FarmerRegistrationScreen.routeName);
+                        },
+                        style: OutlinedButton.styleFrom(
+                          padding: const EdgeInsets.symmetric(vertical: 12),
+                          side: const BorderSide(color: Colors.green),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                        ),
+                        child: const Text(
+                          'Sign Up',
+                          style: TextStyle(fontSize: 16, color: Colors.green),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ] else ...[
+                _buildAuthenticationFlow(
+                  role: role,
+                  idType: appLocalizations.aadharId,
+                  idController: _consumerPhoneController,
+                  otpControllers: _consumerOtpControllers,
+                  otpFocusNodes: _consumerOtpFocusNodes,
+                  showOtpField: _showConsumerOtpField,
+                  showVerifyButton: _showConsumerVerifyButton,
+                  onGenerateOtp: () {
+                    setState(() {
+                      _showConsumerOtpField = true;
+                    });
+                  },
+                  onVerifyOtp: () {
+                    setState(() {
+                      _showConsumerVerifyButton = true;
+                    });
+                  },
+                ),
+              ],
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Widget _buildOtpFields(
       List<TextEditingController> controllers, List<FocusNode> focusNodes) {
     return Row(
@@ -136,6 +291,8 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
     required VoidCallback onGenerateOtp,
     required VoidCallback onVerifyOtp,
   }) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -143,9 +300,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
           padding: const EdgeInsets.symmetric(horizontal: 16.0),
           child: DropdownButtonFormField<String>(
             value: _selectedState,
-            decoration: const InputDecoration(
-              labelText: 'Select State',
-              border: OutlineInputBorder(),
+            decoration: InputDecoration(
+              labelText: appLocalizations.selectState,
+              border: const OutlineInputBorder(),
             ),
             items: _states.map((String state) {
               return DropdownMenuItem<String>(
@@ -182,9 +339,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),
               ],
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: appLocalizations.phoneNumber,
+                border: const OutlineInputBorder(),
               ),
             ),
           ),
@@ -204,9 +361,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                   borderRadius: BorderRadius.circular(8),
                 ),
               ),
-              child: const Text(
-                'Generate OTP',
-                style: TextStyle(fontSize: 16),
+              child: Text(
+                appLocalizations.generateOTP,
+                style: const TextStyle(fontSize: 16),
               ),
             ),
           ),
@@ -232,9 +389,9 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
                     borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                child: const Text(
-                  'Verify OTP',
-                  style: TextStyle(fontSize: 16),
+                child: Text(
+                  appLocalizations.verifyOTP,
+                  style: const TextStyle(fontSize: 16),
                 ),
               ),
             ),
@@ -244,200 +401,34 @@ class _RoleSelectionScreenState extends State<RoleSelectionScreen> {
           const SizedBox(height: 16),
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
-            child: Row(
-              children: [
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      if (role == 'Consumer') {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const MainLayout(),
-                          ),
-                        );
-                      } else if (role == 'Farmer') {
-                        Navigator.pushReplacement(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => const FarmerLayout(),
-                          ),
-                        );
-                      }
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.green,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
+            child: SizedBox(
+              width: double.infinity,
+              child: ElevatedButton(
+                onPressed: () {
+                  Navigator.pushReplacement(
+                    context,
+                    MaterialPageRoute(
+                      builder: (ctx) => const MainLayout(),
                     ),
-                    child: const Text(
-                      'Login',
-                      style: TextStyle(fontSize: 16),
-                    ),
+                  );
+                },
+                style: ElevatedButton.styleFrom(
+                  backgroundColor: Colors.green,
+                  foregroundColor: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 12),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
                   ),
                 ),
-                const SizedBox(width: 16),
-                Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
-                      // TODO: Handle sign up
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: Colors.white,
-                      foregroundColor: Colors.black,
-                      padding: const EdgeInsets.symmetric(vertical: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                        side: const BorderSide(color: Colors.grey),
-                      ),
-                    ),
-                    child: const Text(
-                      'Sign Up',
-                      style: TextStyle(fontSize: 16),
-                    ),
-                  ),
+                child: Text(
+                  appLocalizations.login,
+                  style: const TextStyle(fontSize: 16),
                 ),
-              ],
+              ),
             ),
           ),
         ],
       ],
-    );
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Select Your Role',
-      ),
-      body: Column(
-        children: [
-          Expanded(
-            child: ListView(
-              padding: const EdgeInsets.symmetric(horizontal: 16.0),
-              children: [
-                _buildRoleCard('Farmer', Icons.agriculture),
-                _buildRoleCard('Consumer', Icons.shopping_cart),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-  }
-
-  Widget _buildRoleCard(String role, IconData icon) {
-    return Card(
-      margin: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            RadioListTile<String>(
-              title: Row(
-                children: [
-                  Icon(
-                    icon,
-                    color: Colors.green,
-                    size: 32,
-                  ),
-                  const SizedBox(width: 16),
-                  Text(
-                    role,
-                    style: const TextStyle(
-                      fontSize: 22,
-                      fontWeight: FontWeight.bold,
-                    ),
-                  ),
-                ],
-              ),
-              value: role,
-              groupValue: _selectedRole,
-              onChanged: (String? value) {
-                setState(() {
-                  _selectedRole = value;
-                  if (value != 'Farmer') {
-                    _showFarmerOtpField = false;
-                    _showFarmerVerifyButton = false;
-                  } else {
-                    _showConsumerOtpField = false;
-                    _showConsumerVerifyButton = false;
-                  }
-                });
-              },
-              activeColor: Colors.green,
-              controlAffinity: ListTileControlAffinity.trailing,
-            ),
-            if (_selectedRole == role) ...[
-              const SizedBox(height: 16),
-              if (role == 'Farmer') ...[
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  child: Row(
-                    children: [
-                      Expanded(
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(context, '/farmer-login');
-                          },
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.green,
-                            foregroundColor: Colors.white,
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                          child: const Text('Login',
-                              style: TextStyle(fontSize: 16)),
-                        ),
-                      ),
-                      const SizedBox(width: 16),
-                      Expanded(
-                        child: OutlinedButton(
-                          onPressed: () {
-                            Navigator.pushNamed(
-                                context, '/farmer-registration');
-                          },
-                          style: OutlinedButton.styleFrom(
-                            padding: const EdgeInsets.symmetric(vertical: 12),
-                          ),
-                          child: const Text('Sign Up',
-                              style: TextStyle(fontSize: 16)),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ] else
-                _buildAuthenticationFlow(
-                  role: 'Consumer',
-                  idType: 'Phone Number',
-                  idController: _consumerPhoneController,
-                  otpControllers: _consumerOtpControllers,
-                  otpFocusNodes: _consumerOtpFocusNodes,
-                  showOtpField: _showConsumerOtpField,
-                  showVerifyButton: _showConsumerVerifyButton,
-                  onGenerateOtp: () {
-                    if (_consumerPhoneController.text.isNotEmpty &&
-                        _selectedState != null) {
-                      setState(() {
-                        _showConsumerOtpField = true;
-                      });
-                    }
-                  },
-                  onVerifyOtp: () {
-                    setState(() {
-                      _showConsumerVerifyButton = true;
-                    });
-                  },
-                ),
-            ],
-          ],
-        ),
-      ),
     );
   }
 }

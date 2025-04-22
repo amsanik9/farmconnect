@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../screens/welcome_screen.dart';
+import 'orders_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class ProfileScreen extends StatelessWidget {
   static const routeName = '/profile';
@@ -8,9 +10,11 @@ class ProfileScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('My Profile'),
+        title: Text(appLocalizations.myProfile),
         backgroundColor: Theme.of(context).colorScheme.primary,
         foregroundColor: Colors.white,
         actions: [
@@ -19,8 +23,8 @@ class ProfileScreen extends StatelessWidget {
             onPressed: () {
               // Navigate to edit profile
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Edit profile feature coming soon!'),
+                SnackBar(
+                  content: Text(appLocalizations.editProfile),
                 ),
               );
             },
@@ -30,7 +34,7 @@ class ProfileScreen extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            _buildProfileHeader(),
+            _buildProfileHeader(context),
             const Divider(),
             _buildMenuSection(context),
           ],
@@ -39,7 +43,9 @@ class ProfileScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildProfileHeader() {
+  Widget _buildProfileHeader(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return Container(
       padding: const EdgeInsets.all(20),
       child: Column(
@@ -94,7 +100,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Orders',
+                    appLocalizations.orders,
                     style: TextStyle(
                       color: Colors.grey[600],
                     ),
@@ -119,7 +125,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Negotiations',
+                    appLocalizations.negotiations,
                     style: TextStyle(
                       color: Colors.grey[600],
                     ),
@@ -144,7 +150,7 @@ class ProfileScreen extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    'Favorites',
+                    appLocalizations.favorites,
                     style: TextStyle(
                       color: Colors.grey[600],
                     ),
@@ -159,6 +165,8 @@ class ProfileScreen extends StatelessWidget {
   }
 
   Widget _buildMenuSection(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Column(
@@ -166,25 +174,20 @@ class ProfileScreen extends StatelessWidget {
           _buildMenuItem(
             context,
             icon: Icons.local_shipping_outlined,
-            title: 'My Orders',
+            title: appLocalizations.myOrders,
             onTap: () {
-              // Navigate to orders
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Orders feature coming soon!'),
-                ),
-              );
+              Navigator.of(context).pushNamed(OrdersScreen.routeName);
             },
           ),
           _buildMenuItem(
             context,
             icon: Icons.location_on_outlined,
-            title: 'My Addresses',
+            title: appLocalizations.myAddresses,
             onTap: () {
               // Navigate to addresses
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Addresses feature coming soon!'),
+                SnackBar(
+                  content: Text(appLocalizations.addressesFeature),
                 ),
               );
             },
@@ -192,12 +195,12 @@ class ProfileScreen extends StatelessWidget {
           _buildMenuItem(
             context,
             icon: Icons.favorite_border,
-            title: 'My Favorites',
+            title: appLocalizations.myFavorites,
             onTap: () {
               // Navigate to favorites
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Favorites feature coming soon!'),
+                SnackBar(
+                  content: Text(appLocalizations.favoritesFeature),
                 ),
               );
             },
@@ -205,12 +208,12 @@ class ProfileScreen extends StatelessWidget {
           _buildMenuItem(
             context,
             icon: Icons.payment_outlined,
-            title: 'Payment Methods',
+            title: appLocalizations.paymentMethods,
             onTap: () {
               // Navigate to payment methods
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Payment methods feature coming soon!'),
+                SnackBar(
+                  content: Text(appLocalizations.paymentMethodsFeature),
                 ),
               );
             },
@@ -219,12 +222,12 @@ class ProfileScreen extends StatelessWidget {
           _buildMenuItem(
             context,
             icon: Icons.help_outline,
-            title: 'Help & Support',
+            title: appLocalizations.helpAndSupport,
             onTap: () {
               // Navigate to help
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Help & Support feature coming soon!'),
+                SnackBar(
+                  content: Text(appLocalizations.helpFeature),
                 ),
               );
             },
@@ -232,12 +235,12 @@ class ProfileScreen extends StatelessWidget {
           _buildMenuItem(
             context,
             icon: Icons.settings_outlined,
-            title: 'Settings',
+            title: appLocalizations.settings,
             onTap: () {
               // Navigate to settings
               ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Settings feature coming soon!'),
+                SnackBar(
+                  content: Text(appLocalizations.settingsFeature),
                 ),
               );
             },
@@ -245,21 +248,21 @@ class ProfileScreen extends StatelessWidget {
           _buildMenuItem(
             context,
             icon: Icons.logout,
-            title: 'Logout',
+            title: appLocalizations.logout,
             textColor: Colors.red,
             onTap: () {
               // Show confirmation dialog
               showDialog(
                 context: context,
                 builder: (ctx) => AlertDialog(
-                  title: const Text('Logout'),
-                  content: const Text('Are you sure you want to logout?'),
+                  title: Text(appLocalizations.logout),
+                  content: Text(appLocalizations.logoutConfirmation),
                   actions: [
                     TextButton(
                       onPressed: () {
                         Navigator.of(ctx).pop(); // Close dialog
                       },
-                      child: const Text('Cancel'),
+                      child: Text(appLocalizations.cancel),
                     ),
                     TextButton(
                       onPressed: () {
@@ -275,7 +278,7 @@ class ProfileScreen extends StatelessWidget {
                       style: TextButton.styleFrom(
                         foregroundColor: Colors.red,
                       ),
-                      child: const Text('Logout'),
+                      child: Text(appLocalizations.logout),
                     ),
                   ],
                 ),
