@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:farmconnect/consumer/screens/negotiations_screen.dart';
+import '../../l10n/app_localizations.dart';
 
 class DashboardScreen extends StatelessWidget {
   static const routeName = '/farmer-dashboard';
@@ -8,12 +9,14 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return WillPopScope(
       onWillPop: () async => false, // Prevent back button
       child: Scaffold(
         appBar: AppBar(
           automaticallyImplyLeading: false, // Remove back button
-          title: const Text('Dashboard'),
+          title: Text(appLocalizations.dashboard),
           backgroundColor: Theme.of(context).colorScheme.primary,
           foregroundColor: Colors.white,
         ),
@@ -23,9 +26,9 @@ class DashboardScreen extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Text(
-                  'Welcome, Farmer!',
-                  style: TextStyle(
+                Text(
+                  appLocalizations.welcomeFarmer,
+                  style: const TextStyle(
                     fontSize: 28,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2E603A),
@@ -33,7 +36,7 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 24),
                 _buildStatCard(
-                  title: 'Total Products',
+                  title: appLocalizations.totalProducts,
                   value: '24',
                   percentageChange: '+12%',
                   icon: Icons.inventory_2,
@@ -48,7 +51,7 @@ class DashboardScreen extends StatelessWidget {
                     );
                   },
                   child: _buildStatCard(
-                    title: 'Active Orders',
+                    title: appLocalizations.activeOrders,
                     value: '8',
                     percentageChange: '+25%',
                     icon: Icons.shopping_cart,
@@ -57,7 +60,7 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 _buildStatCard(
-                  title: 'Monthly Sales',
+                  title: appLocalizations.monthlySales,
                   value: '₹45,000',
                   percentageChange: '+18%',
                   icon: Icons.trending_up,
@@ -65,7 +68,7 @@ class DashboardScreen extends StatelessWidget {
                 ),
                 const SizedBox(height: 16),
                 _buildStatCard(
-                  title: 'Sales Growth',
+                  title: appLocalizations.salesGrowth,
                   value: '22%',
                   percentageChange: null,
                   icon: Icons.bar_chart,

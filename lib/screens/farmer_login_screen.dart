@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../widgets/custom_app_bar.dart';
 import '../farmer/widgets/farmer_layout.dart';
 import 'package:flutter/services.dart';
+import '../l10n/app_localizations.dart';
 
 class FarmerLoginScreen extends StatefulWidget {
   static const String routeName = '/farmer-login';
@@ -33,9 +34,10 @@ class _FarmerLoginScreenState extends State<FarmerLoginScreen> {
         _isOtpValid = false;
       });
     } else {
+      final appLocalizations = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text('Please enter a valid 10-digit phone number')),
+        SnackBar(
+            content: Text(appLocalizations.enterValidPhoneNumber)),
       );
     }
   }
@@ -44,8 +46,9 @@ class _FarmerLoginScreenState extends State<FarmerLoginScreen> {
     if (_otpController.text.length == 6) {
       setState(() => _isOtpValid = true);
     } else {
+      final appLocalizations = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the 6-digit OTP')),
+        SnackBar(content: Text(appLocalizations.enterValidOTP)),
       );
     }
   }
@@ -57,16 +60,19 @@ class _FarmerLoginScreenState extends State<FarmerLoginScreen> {
         MaterialPageRoute(builder: (_) => const FarmerLayout()),
       );
     } else {
+      final appLocalizations = AppLocalizations.of(context);
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the 6-digit OTP')),
+        SnackBar(content: Text(appLocalizations.enterValidOTP)),
       );
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return Scaffold(
-      appBar: const CustomAppBar(title: 'Farmer Login'),
+      appBar: CustomAppBar(title: appLocalizations.login),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
         child: Column(
@@ -79,9 +85,9 @@ class _FarmerLoginScreenState extends State<FarmerLoginScreen> {
                 FilteringTextInputFormatter.digitsOnly,
                 LengthLimitingTextInputFormatter(10),
               ],
-              decoration: const InputDecoration(
-                labelText: 'Phone Number',
-                border: OutlineInputBorder(),
+              decoration: InputDecoration(
+                labelText: appLocalizations.phoneNumber,
+                border: const OutlineInputBorder(),
                 prefixText: '+91 ',
               ),
             ),
@@ -93,7 +99,7 @@ class _FarmerLoginScreenState extends State<FarmerLoginScreen> {
                 foregroundColor: Colors.white,
                 minimumSize: const Size(double.infinity, 50),
               ),
-              child: const Text('Generate OTP'),
+              child: Text(appLocalizations.generateOTP),
             ),
             if (_isOtpSent) ...[
               const SizedBox(height: 16),
@@ -104,9 +110,9 @@ class _FarmerLoginScreenState extends State<FarmerLoginScreen> {
                   FilteringTextInputFormatter.digitsOnly,
                   LengthLimitingTextInputFormatter(6),
                 ],
-                decoration: const InputDecoration(
-                  labelText: 'Enter OTP',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: appLocalizations.verifyOTP,
+                  border: const OutlineInputBorder(),
                 ),
               ),
               const SizedBox(height: 16),
@@ -117,7 +123,7 @@ class _FarmerLoginScreenState extends State<FarmerLoginScreen> {
                   foregroundColor: Colors.white,
                   minimumSize: const Size(double.infinity, 50),
                 ),
-                child: const Text('Verify OTP'),
+                child: Text(appLocalizations.verify),
               ),
               if (_isOtpValid) ...[
                 const SizedBox(height: 16),
@@ -128,7 +134,7 @@ class _FarmerLoginScreenState extends State<FarmerLoginScreen> {
                     foregroundColor: Colors.white,
                     minimumSize: const Size(double.infinity, 50),
                   ),
-                  child: const Text('Login'),
+                  child: Text(appLocalizations.login),
                 ),
               ],
             ],

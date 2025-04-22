@@ -3,6 +3,7 @@ import '../consumer/screens/products_overview_screen.dart';
 import '../consumer/screens/negotiations_screen.dart';
 import '../consumer/screens/chat_screen.dart';
 import '../consumer/screens/profile_screen.dart';
+import '../consumer/screens/orders_screen.dart';
 
 class MainLayout extends StatefulWidget {
   const MainLayout({Key? key}) : super(key: key);
@@ -15,10 +16,10 @@ class _MainLayoutState extends State<MainLayout> {
   int _selectedIndex = 0;
 
   final List<Widget> _screens = [
-    const ProductsOverviewScreen(),
-    const NegotiationsScreen(),
-    const ChatScreen(),
-    const ProfileScreen(),
+    const ProductsOverviewScreen(),   // Home
+    const NegotiationsScreen(),       // Negotiate
+    const ChatScreen(),               // Chat
+    const ProfileScreen(),            // Profile
   ];
 
   void _onItemTapped(int index) {
@@ -29,6 +30,10 @@ class _MainLayoutState extends State<MainLayout> {
 
   @override
   Widget build(BuildContext context) {
+    if (_selectedIndex >= _screens.length) {
+      _selectedIndex = 0;
+    }
+    
     return Scaffold(
       body: _screens[_selectedIndex],
       bottomNavigationBar: BottomNavigationBar(
@@ -44,7 +49,7 @@ class _MainLayoutState extends State<MainLayout> {
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.handshake),
-            label: 'Negotiations',
+            label: 'Negotiate',
           ),
           BottomNavigationBarItem(
             icon: Icon(Icons.chat),

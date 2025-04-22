@@ -1,0 +1,2 @@
+D:/CODES/project/farmconnect/android/app/.cxx/Debug/675o6i24/x86_64/CMakeFiles/edit_cache.dir
+D:/CODES/project/farmconnect/android/app/.cxx/Debug/675o6i24/x86_64/CMakeFiles/rebuild_cache.dir

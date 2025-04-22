@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import '../providers/language_provider.dart';
 import '../widgets/custom_app_bar.dart';
 import 'role_selection_screen.dart';
+import '../l10n/app_localizations.dart';
 
 class WelcomeScreen extends StatefulWidget {
   const WelcomeScreen({super.key});
@@ -16,17 +17,19 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return Scaffold(
-      appBar: const CustomAppBar(
-        title: 'Welcome to FarmConnect',
+      appBar: CustomAppBar(
+        title: appLocalizations.welcome,
       ),
       body: Column(
         children: [
-          const Padding(
-            padding: EdgeInsets.all(16.0),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
             child: Text(
-              'Select your language',
-              style: TextStyle(
+              appLocalizations.selectLanguage,
+              style: const TextStyle(
                 fontSize: 22,
                 fontWeight: FontWeight.bold,
               ),
@@ -38,9 +41,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
               children: [
                 _buildLanguageRadioTile('English', 'en'),
                 _buildLanguageRadioTile('हिंदी', 'hi'),
+                _buildLanguageRadioTile('বাংলা', 'bn'),
                 _buildLanguageRadioTile('தமிழ்', 'ta'),
                 _buildLanguageRadioTile('తెలుగు', 'te'),
-                _buildLanguageRadioTile('বাংলা', 'bn'),
                 _buildLanguageRadioTile('मराठी', 'mr'),
                 _buildLanguageRadioTile('ગુજરાતી', 'gu'),
                 _buildLanguageRadioTile('ಕನ್ನಡ', 'kn'),
@@ -75,9 +78,9 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 backgroundColor: Colors.green,
                 disabledBackgroundColor: Colors.grey,
               ),
-              child: const Text(
-                'Continue',
-                style: TextStyle(fontSize: 18),
+              child: Text(
+                appLocalizations.continueButton,
+                style: const TextStyle(fontSize: 18),
               ),
             ),
           ),

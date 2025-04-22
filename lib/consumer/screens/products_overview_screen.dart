@@ -5,7 +5,13 @@ import '../../widgets/products_grid.dart';
 import '../../widgets/cart_badge.dart';
 import '../../providers/cart_provider.dart';
 import '../../providers/products_provider.dart';
+import '../../providers/wallet_provider.dart';
 import 'cart_screen.dart';
+import 'wallet_screen.dart';
+import '../../models/product.dart';
+import '../widgets/product_grid.dart';
+import '../widgets/category_filter.dart';
+import '../../l10n/app_localizations.dart';
 
 enum FilterOptions {
   all,
@@ -23,10 +29,37 @@ class ProductsOverviewScreen extends StatefulWidget {
 
 class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
   var _showOnlyOrganic = false;
+  String? _selectedCategory;
+  late Future<void> _productsFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    // Load products from Supabase when the screen initializes
+    _productsFuture = _refreshProducts();
+  }
+
+  Future<void> _refreshProducts() async {
+    return Provider.of<ProductsProvider>(context, listen: false)
+        .fetchProductsFromSupabase();
+  }
+
+  void _selectCategory(String? category) {
+    setState(() {
+      _selectedCategory = category;
+    });
+  }
 
   @override
   Widget build(BuildContext context) {
-    final productsProvider = Provider.of<ProductsProvider>(context);
+    final productsData = Provider.of<ProductsProvider>(context);
+    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    final appLocalizations = AppLocalizations.of(context);
+    
+    // Filter products by category if a category is selected
+    List<Product> displayedProducts = _selectedCategory == null
+        ? productsData.items
+        : productsData.getProductsByCategory(_selectedCategory!);
 
     return WillPopScope(
       onWillPop: () async => false, // Prevent back button
@@ -57,6 +90,47 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                   value: FilterOptions.organic,
                   child: Text('Only Organic'),
                 ),
+              ],
+            ),
+            // Wallet Button with loyalty points indicator
+            Stack(
+              alignment: Alignment.center,
+              children: [
+                IconButton(
+                  icon: const Icon(Icons.account_balance_wallet),
+                  onPressed: () {
+                    Navigator.of(context).push(
+                      MaterialPageRoute(
+                        builder: (context) => const WalletScreen(),
+                      ),
+                    );
+                  },
+                ),
+                if (walletProvider.totalPoints > 0)
+                  Positioned(
+                    right: 8,
+                    top: 8,
+                    child: Container(
+                      padding: const EdgeInsets.all(2),
+                      decoration: BoxDecoration(
+                        color: Colors.amber,
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      constraints: const BoxConstraints(
+                        minWidth: 16,
+                        minHeight: 16,
+                      ),
+                      child: Text(
+                        walletProvider.totalPoints.toInt().toString(),
+                        style: const TextStyle(
+                          fontSize: 10,
+                          color: Colors.black,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ),
               ],
             ),
             Consumer<CartProvider>(
@@ -116,7 +190,7 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
                       ],
                     ),
                     onSelected: (SortOption value) {
-                      productsProvider.setSortOption(value);
+                      productsData.setSortOption(value);
                     },
                     itemBuilder: (ctx) => [
                       const PopupMenuItem(
@@ -149,7 +223,53 @@ class _ProductsOverviewScreenState extends State<ProductsOverviewScreen> {
               ),
             ),
             Expanded(
-              child: ProductsGrid(showOnlyOrganic: _showOnlyOrganic),
+              child: FutureBuilder(
+                future: _productsFuture,
+                builder: (ctx, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (snapshot.hasError) {
+                    return Center(
+                      child: Text(
+                        'Error: ${snapshot.error}',
+                        style: const TextStyle(color: Colors.red),
+                      ),
+                    );
+                  } else if (productsData.isLoading) {
+                    return const Center(child: CircularProgressIndicator());
+                  } else if (productsData.error != null) {
+                    return Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Text(
+                            'Error: ${productsData.error}',
+                            style: const TextStyle(color: Colors.red),
+                          ),
+                          const SizedBox(height: 16),
+                          ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                _productsFuture = _refreshProducts();
+                              });
+                            },
+                            child: Text(appLocalizations.retry),
+                          ),
+                        ],
+                      ),
+                    );
+                  } else if (displayedProducts.isEmpty) {
+                    return Center(
+                      child: Text(appLocalizations.noProductsFound),
+                    );
+                  } else {
+                    return RefreshIndicator(
+                      onRefresh: _refreshProducts,
+                      child: ProductGrid(products: displayedProducts),
+                    );
+                  }
+                },
+              ),
             ),
           ],
         ),

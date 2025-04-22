@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../farmer/widgets/farmer_layout.dart';
 import 'package:flutter/services.dart';
+import '../l10n/app_localizations.dart';
 
 class FarmerRegistrationScreen extends StatefulWidget {
   static const String routeName = '/farmer-registration';
@@ -74,11 +75,12 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
   }
 
   void _verifyOtp() {
+    final appLocalizations = AppLocalizations.of(context);
     if (_otpController.text.length == 6) {
       setState(() => _isOtpValid = true);
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter the 6-digit OTP')),
+        SnackBar(content: Text(appLocalizations.enterValidOTP)),
       );
     }
   }
@@ -93,9 +95,11 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Sign Up'),
+        title: Text(appLocalizations.signup),
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -106,52 +110,52 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
             children: [
               TextFormField(
                 controller: _nameController,
-                decoration: const InputDecoration(
-                  labelText: 'Full Name',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: appLocalizations.name,
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (val) =>
-                    val == null || val.isEmpty ? 'Enter your name' : null,
+                    val == null || val.isEmpty ? appLocalizations.enterName : null,
               ),
               const SizedBox(height: 16),
               DropdownButtonFormField<String>(
-                decoration: const InputDecoration(
-                  labelText: 'State',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: appLocalizations.selectState,
+                  border: const OutlineInputBorder(),
                 ),
                 value: _selectedState,
                 items: _states
                     .map((st) => DropdownMenuItem(value: st, child: Text(st)))
                     .toList(),
                 onChanged: (val) => setState(() => _selectedState = val),
-                validator: (val) => val == null ? 'Select a state' : null,
+                validator: (val) => val == null ? appLocalizations.selectState : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _addressController,
-                decoration: const InputDecoration(
-                  labelText: 'Address',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: appLocalizations.deliveryAddress,
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (val) =>
-                    val == null || val.isEmpty ? 'Enter your address' : null,
+                    val == null || val.isEmpty ? appLocalizations.enterValidAddress : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _kisanIdController,
-                decoration: const InputDecoration(
-                  labelText: 'Kisan ID',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: appLocalizations.kisanId,
+                  border: const OutlineInputBorder(),
                 ),
                 validator: (val) =>
-                    val == null || val.isEmpty ? 'Enter your Kisan ID' : null,
+                    val == null || val.isEmpty ? appLocalizations.enterKisanId : null,
               ),
               const SizedBox(height: 16),
               TextFormField(
                 controller: _phoneController,
-                decoration: const InputDecoration(
-                  labelText: 'Phone Number',
-                  border: OutlineInputBorder(),
+                decoration: InputDecoration(
+                  labelText: appLocalizations.phoneNumber,
+                  border: const OutlineInputBorder(),
                   prefixText: '+91 ',
                 ),
                 keyboardType: TextInputType.phone,
@@ -161,10 +165,10 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                 ],
                 validator: (value) {
                   if (value == null || value.isEmpty) {
-                    return 'Please enter your phone number';
+                    return appLocalizations.enterPhoneNumber;
                   }
                   if (value.length != 10) {
-                    return 'Enter a valid 10-digit phone number';
+                    return appLocalizations.enterValidPhoneNumber;
                   }
                   return null;
                 },
@@ -173,15 +177,15 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
               if (!_isOtpSent)
                 ElevatedButton(
                   onPressed: _sendOtp,
-                  child: const Text('Generate OTP'),
+                  child: Text(appLocalizations.generateOTP),
                 ),
               if (_isOtpSent) ...[
                 const SizedBox(height: 16),
                 TextFormField(
                   controller: _otpController,
-                  decoration: const InputDecoration(
-                    labelText: 'OTP',
-                    border: OutlineInputBorder(),
+                  decoration: InputDecoration(
+                    labelText: appLocalizations.verifyOTP,
+                    border: const OutlineInputBorder(),
                   ),
                   keyboardType: TextInputType.number,
                   inputFormatters: [
@@ -189,19 +193,19 @@ class _FarmerRegistrationScreenState extends State<FarmerRegistrationScreen> {
                     LengthLimitingTextInputFormatter(6)
                   ],
                   validator: (value) => value == null || value.length != 6
-                      ? 'Enter 6-digit OTP'
+                      ? appLocalizations.enterValidOTP
                       : null,
                 ),
                 const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: _verifyOtp,
-                  child: const Text('Verify OTP'),
+                  child: Text(appLocalizations.verify),
                 ),
                 if (_isOtpValid) ...[
                   const SizedBox(height: 16),
                   ElevatedButton(
                     onPressed: _handleSignUp,
-                    child: const Text('Sign Up'),
+                    child: Text(appLocalizations.signup),
                   ),
                 ],
               ],

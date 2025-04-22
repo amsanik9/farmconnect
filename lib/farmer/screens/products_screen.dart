@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../l10n/app_localizations.dart';
 
 class Product {
   final String name;
@@ -28,29 +29,40 @@ class ProductsScreen extends StatefulWidget {
 }
 
 class _ProductsScreenState extends State<ProductsScreen> {
-  final List<Product> _products = [
-    Product(
-        name: 'Organic Tomatoes',
-        type: 'Vegetable',
-        unit: 'kg',
-        tags: ['Organic'],
-        price: 40,
-        stock: 100),
-    Product(
-        name: 'Fresh Carrots',
-        type: 'Vegetable',
-        unit: 'dozen',
-        tags: ['Fresh'],
-        price: 30,
-        stock: 150),
-    Product(
-        name: 'Green Peppers',
-        type: 'Vegetable',
-        unit: 'mg',
-        tags: [],
-        price: 35,
-        stock: 80),
-  ];
+  List<Product> _products = [];
+  
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final appLocalizations = AppLocalizations.of(context);
+    
+    // Initialize products with localized names
+    if (_products.isEmpty) {
+      _products = [
+        Product(
+            name: appLocalizations.organicTomatoes,
+            type: appLocalizations.vegetable,
+            unit: 'kg',
+            tags: [appLocalizations.organic],
+            price: 40,
+            stock: 100),
+        Product(
+            name: appLocalizations.freshCarrots,
+            type: appLocalizations.vegetable,
+            unit: 'dozen',
+            tags: [appLocalizations.fresh],
+            price: 30,
+            stock: 150),
+        Product(
+            name: appLocalizations.greenPeppers,
+            type: appLocalizations.vegetable,
+            unit: 'mg',
+            tags: [],
+            price: 35,
+            stock: 80),
+      ];
+    }
+  }
 
   final List<String> _productTypes = [
     'Dairy',
@@ -63,6 +75,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   final List<String> _units = ['kg', 'dozen', 'mg'];
 
   void _showAddProductSheet() {
+    final appLocalizations = AppLocalizations.of(context);
     final _formKey = GlobalKey<FormState>();
     final nameCtrl = TextEditingController();
     final priceCtrl = TextEditingController();
@@ -87,19 +100,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Add Product',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                SizedBox(height: 12),
+                Text(
+                  appLocalizations.addProductTitle,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
+                ),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: nameCtrl,
-                  decoration: InputDecoration(labelText: 'Name'),
+                  decoration: InputDecoration(labelText: appLocalizations.name),
                   validator: (val) =>
-                      val == null || val.isEmpty ? 'Enter a name' : null,
+                      val == null || val.isEmpty ? appLocalizations.enterName : null,
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'Type'),
+                  decoration: InputDecoration(labelText: appLocalizations.type),
                   value: selectedType,
                   items: _productTypes
                       .map((type) => DropdownMenuItem(
@@ -110,49 +124,48 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   onChanged: (value) => setState(() {
                     selectedType = value;
                   }),
-                  validator: (val) => val == null ? 'Select a type' : null,
+                  validator: (val) => val == null ? appLocalizations.selectType : null,
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'Unit'),
+                  decoration: InputDecoration(labelText: appLocalizations.unit),
                   value: selectedUnit,
                   items: _units
                       .map((u) => DropdownMenuItem(value: u, child: Text(u)))
                       .toList(),
                   onChanged: (value) => setState(() => selectedUnit = value),
-                  validator: (val) => val == null ? 'Select a unit' : null,
+                  validator: (val) => val == null ? appLocalizations.selectUnit : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: priceCtrl,
-                  decoration: InputDecoration(labelText: 'Price'),
+                  decoration: InputDecoration(labelText: appLocalizations.price),
                   keyboardType: TextInputType.number,
                   validator: (val) => val == null || int.tryParse(val) == null
-                      ? 'Enter a valid price'
+                      ? appLocalizations.enterValidPrice
                       : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: stockCtrl,
-                  decoration: InputDecoration(labelText: 'Stock'),
+                  decoration: InputDecoration(labelText: appLocalizations.stock),
                   keyboardType: TextInputType.number,
                   validator: (val) {
                     if (val == null || int.tryParse(val) == null) {
-                      return 'Enter valid stock';
+                      return appLocalizations.enterValidStock;
                     }
                     if (int.parse(val) <= 50) {
-                      return 'Stock must be greater than 50';
+                      return appLocalizations.stockMustBeGreater;
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: tagsCtrl,
-                  decoration:
-                      InputDecoration(labelText: 'Tags (comma separated)'),
+                  decoration: InputDecoration(labelText: appLocalizations.tags),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate() &&
@@ -176,9 +189,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       Navigator.of(ctx).pop();
                     }
                   },
-                  child: Text('Add'),
+                  child: Text(appLocalizations.add),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -188,6 +201,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   void _showEditProductSheet(int index) {
+    final appLocalizations = AppLocalizations.of(context);
     final _formKey = GlobalKey<FormState>();
     final nameCtrl = TextEditingController(text: _products[index].name);
     final priceCtrl =
@@ -215,19 +229,20 @@ class _ProductsScreenState extends State<ProductsScreen> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                Text('Edit Product',
-                    style:
-                        TextStyle(fontSize: 20, fontWeight: FontWeight.bold)),
-                SizedBox(height: 12),
+                Text(
+                  appLocalizations.editProductTitle,
+                  style: const TextStyle(fontSize: 20, fontWeight: FontWeight.bold)
+                ),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: nameCtrl,
-                  decoration: InputDecoration(labelText: 'Name'),
+                  decoration: InputDecoration(labelText: appLocalizations.name),
                   validator: (val) =>
-                      val == null || val.isEmpty ? 'Enter a name' : null,
+                      val == null || val.isEmpty ? appLocalizations.enterName : null,
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'Type'),
+                  decoration: InputDecoration(labelText: appLocalizations.type),
                   value: selectedType,
                   items: _productTypes
                       .map((type) => DropdownMenuItem(
@@ -238,49 +253,48 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   onChanged: (value) => setState(() {
                     selectedType = value;
                   }),
-                  validator: (val) => val == null ? 'Select a type' : null,
+                  validator: (val) => val == null ? appLocalizations.selectType : null,
                 ),
                 const SizedBox(height: 12),
                 DropdownButtonFormField<String>(
-                  decoration: InputDecoration(labelText: 'Unit'),
+                  decoration: InputDecoration(labelText: appLocalizations.unit),
                   value: selectedUnit,
                   items: _units
                       .map((u) => DropdownMenuItem(value: u, child: Text(u)))
                       .toList(),
                   onChanged: (value) => setState(() => selectedUnit = value),
-                  validator: (val) => val == null ? 'Select a unit' : null,
+                  validator: (val) => val == null ? appLocalizations.selectUnit : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: priceCtrl,
-                  decoration: InputDecoration(labelText: 'Price'),
+                  decoration: InputDecoration(labelText: appLocalizations.price),
                   keyboardType: TextInputType.number,
                   validator: (val) => val == null || int.tryParse(val) == null
-                      ? 'Enter a valid price'
+                      ? appLocalizations.enterValidPrice
                       : null,
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: stockCtrl,
-                  decoration: InputDecoration(labelText: 'Stock'),
+                  decoration: InputDecoration(labelText: appLocalizations.stock),
                   keyboardType: TextInputType.number,
                   validator: (val) {
                     if (val == null || int.tryParse(val) == null) {
-                      return 'Enter valid stock';
+                      return appLocalizations.enterValidStock;
                     }
                     if (int.parse(val) <= 50) {
-                      return 'Stock must be greater than 50';
+                      return appLocalizations.stockMustBeGreater;
                     }
                     return null;
                   },
                 ),
-                SizedBox(height: 12),
+                const SizedBox(height: 12),
                 TextFormField(
                   controller: tagsCtrl,
-                  decoration:
-                      InputDecoration(labelText: 'Tags (comma separated)'),
+                  decoration: InputDecoration(labelText: appLocalizations.tags),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
                 ElevatedButton(
                   onPressed: () {
                     if (_formKey.currentState!.validate() &&
@@ -304,9 +318,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
                       Navigator.of(ctx).pop();
                     }
                   },
-                  child: Text('Save'),
+                  child: Text(appLocalizations.save),
                 ),
-                SizedBox(height: 16),
+                const SizedBox(height: 16),
               ],
             ),
           ),
@@ -316,15 +330,17 @@ class _ProductsScreenState extends State<ProductsScreen> {
   }
 
   void _confirmDelete(int index) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     showDialog(
       context: context,
       builder: (ctx) => AlertDialog(
-        title: Text('Delete Product'),
-        content:
-            Text('Are you sure you want to delete ${_products[index].name}?'),
+        title: Text(appLocalizations.deleteProduct),
+        content: Text('${appLocalizations.deleteConfirmation} ${_products[index].name}?'),
         actions: [
           TextButton(
-              onPressed: () => Navigator.of(ctx).pop(), child: Text('Cancel')),
+              onPressed: () => Navigator.of(ctx).pop(),
+              child: Text(appLocalizations.cancel)),
           TextButton(
             onPressed: () {
               setState(() {
@@ -332,7 +348,10 @@ class _ProductsScreenState extends State<ProductsScreen> {
               });
               Navigator.of(ctx).pop();
             },
-            child: Text('Delete', style: TextStyle(color: Colors.red)),
+            child: Text(
+              appLocalizations.delete,
+              style: const TextStyle(color: Colors.red)
+            ),
           ),
         ],
       ),
@@ -341,9 +360,11 @@ class _ProductsScreenState extends State<ProductsScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Products'),
+        title: Text(appLocalizations.products),
         automaticallyImplyLeading: false,
       ),
       body: Column(
@@ -352,9 +373,9 @@ class _ProductsScreenState extends State<ProductsScreen> {
             padding: const EdgeInsets.all(16.0),
             child: Row(
               children: [
-                const Text(
-                  'Products',
-                  style: TextStyle(
+                Text(
+                  appLocalizations.products,
+                  style: const TextStyle(
                     fontSize: 24,
                     fontWeight: FontWeight.bold,
                     color: Color(0xFF2E603A),
@@ -364,7 +385,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 ElevatedButton.icon(
                   onPressed: _showAddProductSheet,
                   icon: const Icon(Icons.add),
-                  label: const Text('Add Product'),
+                  label: Text(appLocalizations.addProduct),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: Theme.of(context).colorScheme.primary,
                     foregroundColor: Colors.white,
@@ -377,7 +398,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
             padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: TextField(
               decoration: InputDecoration(
-                hintText: 'Search products...',
+                hintText: appLocalizations.searchProducts,
                 prefixIcon: const Icon(Icons.search),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(8),
@@ -421,6 +442,8 @@ class _ProductsScreenState extends State<ProductsScreen> {
     required VoidCallback onEdit,
     required VoidCallback onDelete,
   }) {
+    final appLocalizations = AppLocalizations.of(context);
+    
     return Card(
       margin: const EdgeInsets.only(bottom: 16),
       child: Padding(
@@ -455,11 +478,13 @@ class _ProductsScreenState extends State<ProductsScreen> {
                   icon: const Icon(Icons.edit_outlined),
                   onPressed: onEdit,
                   color: Colors.blue,
+                  tooltip: appLocalizations.edit,
                 ),
                 IconButton(
                   icon: const Icon(Icons.delete_outline),
                   onPressed: onDelete,
                   color: Colors.red,
+                  tooltip: appLocalizations.delete,
                 ),
               ],
             ),
@@ -476,7 +501,7 @@ class _ProductsScreenState extends State<ProductsScreen> {
                 ),
                 const SizedBox(width: 16),
                 Text(
-                  'Stock: $stock $unit',
+                  '${appLocalizations.stock}: $stock $unit',
                   style: const TextStyle(
                     color: Colors.grey,
                   ),

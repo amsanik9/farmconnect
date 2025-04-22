@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:cached_network_image/cached_network_image.dart';
 import '../../providers/cart_provider.dart';
+import '../../providers/wallet_provider.dart';
 import 'payment_screen.dart';
 
 class CheckoutScreen extends StatefulWidget {
@@ -28,11 +29,14 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   final _zipController = TextEditingController();
   final _phoneController = TextEditingController();
   final _emailController = TextEditingController();
+  final _redeemPointsController = TextEditingController();
 
   String _paymentMethod = 'Credit Card';
   String _deliveryMethod = 'Standard';
   double _standardDeliveryCharge = 5.0;
   double _expressDeliveryCharge = 10.0;
+  bool _usingLoyaltyPoints = false;
+  double _redeemedPointsValue = 0.0;
 
   // Get the current delivery charge based on selected method
   double get _deliveryCharge => _deliveryMethod == 'Standard'
@@ -48,20 +52,36 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
     _zipController.dispose();
     _phoneController.dispose();
     _emailController.dispose();
+    _redeemPointsController.dispose();
     super.dispose();
   }
 
   void _placeOrder(BuildContext context) {
+    final walletProvider = Provider.of<WalletProvider>(context, listen: false);
+    final cartProvider = Provider.of<CartProvider>(context, listen: false);
+    
+    // Redeem points if user opted to use loyalty points
+    if (_usingLoyaltyPoints && _redeemedPointsValue > 0) {
+      // Calculate how many points to redeem
+      final pointsToRedeem = _redeemedPointsValue / 0.5; // Each point is worth Rs. 0.5
+      walletProvider.redeemPoints(
+        pointsToRedeem, 
+        'Redeemed for order discount'
+      );
+    }
+    
+    // Calculate final amount after point redemption
+    final totalAmount = cartProvider.totalAmount + _deliveryCharge - _redeemedPointsValue;
+    
     // Navigate to payment screen
     Navigator.of(context).pushNamed(
       PaymentScreen.routeName,
       arguments: {
-        'totalAmount':
-            Provider.of<CartProvider>(context, listen: false).totalAmount +
-                _deliveryCharge,
+        'totalAmount': totalAmount > 0 ? totalAmount : 0,
         'customerEmail': _emailController.text,
         'deliveryMethod': _deliveryMethod,
         'deliveryCharge': _deliveryCharge,
+        'pointsRedeemed': _redeemedPointsValue > 0 ? _redeemedPointsValue : 0,
       },
     );
   }
@@ -439,6 +459,16 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
   }
 
   Widget _buildPaymentStep(CartProvider cart) {
+    final walletProvider = Provider.of<WalletProvider>(context);
+    final availablePoints = walletProvider.totalPoints;
+    final maxRedeemableValue = walletProvider.pointsInRupees;
+    
+    // Calculate subtotal before loyalty points
+    final subtotal = cart.totalAmount + _deliveryCharge;
+    
+    // Calculate final total after loyalty points
+    final totalAfterPoints = subtotal - _redeemedPointsValue;
+    
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -479,6 +509,123 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
             });
           },
         ),
+        
+        // Loyalty Points Section
+        const SizedBox(height: 20),
+        Card(
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(12),
+            side: BorderSide(color: Theme.of(context).colorScheme.primary.withOpacity(0.5)),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Text(
+                      'Use Loyalty Points',
+                      style: TextStyle(
+                        fontSize: 16, 
+                        fontWeight: FontWeight.bold,
+                        color: Theme.of(context).colorScheme.primary,
+                      ),
+                    ),
+                    Switch(
+                      value: _usingLoyaltyPoints,
+                      activeColor: Theme.of(context).colorScheme.primary,
+                      onChanged: (value) {
+                        setState(() {
+                          _usingLoyaltyPoints = value;
+                          if (!value) {
+                            _redeemedPointsValue = 0;
+                            _redeemPointsController.clear();
+                          }
+                        });
+                      },
+                    ),
+                  ],
+                ),
+                Text(
+                  'Available points: ${availablePoints.toStringAsFixed(1)} (Worth ₹${maxRedeemableValue.toStringAsFixed(2)})',
+                  style: TextStyle(color: Colors.grey[700]),
+                ),
+                if (_usingLoyaltyPoints) ...[
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Expanded(
+                        child: TextField(
+                          controller: _redeemPointsController,
+                          keyboardType: TextInputType.number,
+                          decoration: InputDecoration(
+                            labelText: 'Amount to redeem (₹)',
+                            hintText: 'Enter amount in rupees',
+                            border: const OutlineInputBorder(),
+                            helperText: 'Max: ₹${maxRedeemableValue.toStringAsFixed(2)}',
+                          ),
+                          onChanged: (value) {
+                            double? amount = double.tryParse(value);
+                            if (amount != null) {
+                              // Convert rupees to points
+                              double pointsRequired = amount / 0.5;
+                              
+                              // Ensure they don't try to redeem more than available
+                              if (pointsRequired > availablePoints) {
+                                amount = maxRedeemableValue;
+                                _redeemPointsController.text = maxRedeemableValue.toStringAsFixed(2);
+                              }
+                              
+                              // Ensure they don't redeem more than the order total
+                              if (amount > subtotal) {
+                                amount = subtotal;
+                                _redeemPointsController.text = subtotal.toStringAsFixed(2);
+                              }
+                              
+                              setState(() {
+                                _redeemedPointsValue = amount!;
+                              });
+                            } else {
+                              setState(() {
+                                _redeemedPointsValue = 0;
+                              });
+                            }
+                          },
+                        ),
+                      ),
+                      const SizedBox(width: 12),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Use maximum available points, up to the order total
+                          double maxAmount = subtotal < maxRedeemableValue ? subtotal : maxRedeemableValue;
+                          
+                          setState(() {
+                            _redeemedPointsValue = maxAmount;
+                            _redeemPointsController.text = maxAmount.toStringAsFixed(2);
+                          });
+                        },
+                        child: const Text('Max'),
+                      ),
+                    ],
+                  ),
+                  if (_redeemedPointsValue > 0) ...[
+                    const SizedBox(height: 8),
+                    Text(
+                      'You will use ${(_redeemedPointsValue / 0.5).toStringAsFixed(1)} points',
+                      style: TextStyle(
+                        color: Theme.of(context).colorScheme.primary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  ],
+                ],
+              ],
+            ),
+          ),
+        ),
+        
         const SizedBox(height: 20),
         const Text(
           'Order Summary:',
@@ -489,7 +636,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('Items Total:'),
-            Text('Rs. ${cart.totalAmount.toInt()}'),
+            Text('₹${cart.totalAmount.toStringAsFixed(2)}'),
           ],
         ),
         const SizedBox(height: 4),
@@ -497,9 +644,25 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             const Text('Delivery Fee:'),
-            Text('Rs. ${_deliveryCharge.toInt()}'),
+            Text('₹${_deliveryCharge.toStringAsFixed(2)}'),
           ],
         ),
+        if (_redeemedPointsValue > 0) ...[
+          const SizedBox(height: 4),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                'Loyalty Points Discount:',
+                style: TextStyle(color: Colors.green),
+              ),
+              Text(
+                '-₹${_redeemedPointsValue.toStringAsFixed(2)}',
+                style: const TextStyle(color: Colors.green),
+              ),
+            ],
+          ),
+        ],
         const Divider(),
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -509,7 +672,7 @@ class _CheckoutScreenState extends State<CheckoutScreen> {
               style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
             ),
             Text(
-              'Rs. ${(cart.totalAmount + _deliveryCharge).toInt()}',
+              '₹${totalAfterPoints.toStringAsFixed(2)}',
               style: const TextStyle(
                 fontSize: 18,
                 fontWeight: FontWeight.bold,

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../models/product.dart';
+import '../services/supabase_service.dart';
 
 enum SortOption {
   nameAsc,
@@ -11,6 +12,10 @@ enum SortOption {
 }
 
 class ProductsProvider with ChangeNotifier {
+  final SupabaseService _supabaseService = SupabaseService();
+  bool _isLoading = false;
+  String? _error;
+
   List<Product> _items = [
     Product(
       id: 'p1',
@@ -106,6 +111,9 @@ class ProductsProvider with ChangeNotifier {
 
   SortOption _currentSortOption = SortOption.nameAsc;
 
+  bool get isLoading => _isLoading;
+  String? get error => _error;
+
   List<Product> get items {
     return [..._sortedItems()];
   }
@@ -184,5 +192,96 @@ class ProductsProvider with ChangeNotifier {
     );
     _items.add(newProduct);
     notifyListeners();
+  }
+
+  // Fetch products from Supabase
+  Future<void> fetchProductsFromSupabase() async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      final productsList = await _supabaseService.getProducts();
+      
+      _items = productsList.map((product) => Product.fromJson(product)).toList();
+      
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      debugPrint('Error fetching products: $e');
+      notifyListeners();
+    }
+  }
+
+  // Add product to Supabase
+  Future<void> addProductToSupabase(Product product) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      // First add to Supabase
+      await _supabaseService.addProduct(product.toJson());
+      
+      // Then add to local list
+      addProduct(product);
+      
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      debugPrint('Error adding product: $e');
+      notifyListeners();
+    }
+  }
+
+  // Update product in Supabase
+  Future<void> updateProductInSupabase(String id, Product updatedProduct) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _supabaseService.updateProduct(id, updatedProduct.toJson());
+      
+      // Update local list
+      final productIndex = _items.indexWhere((product) => product.id == id);
+      if (productIndex >= 0) {
+        _items[productIndex] = updatedProduct;
+      }
+      
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      debugPrint('Error updating product: $e');
+      notifyListeners();
+    }
+  }
+
+  // Delete product from Supabase
+  Future<void> deleteProductFromSupabase(String id) async {
+    _isLoading = true;
+    _error = null;
+    notifyListeners();
+
+    try {
+      await _supabaseService.deleteProduct(id);
+      
+      // Remove from local list
+      _items.removeWhere((product) => product.id == id);
+      
+      _isLoading = false;
+      notifyListeners();
+    } catch (e) {
+      _error = e.toString();
+      _isLoading = false;
+      debugPrint('Error deleting product: $e');
+      notifyListeners();
+    }
   }
 }
