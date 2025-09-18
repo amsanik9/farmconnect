@@ -17,7 +17,7 @@ The project consists of two parts:
 
 ## Repository Structure
 - [Frontend Repository](https://github.com/amsanik9/farmconnect)  
-- [Backend Repository](https://github.com/amsanik9/farmconnect-backend)  
+- [Backend Repository](https://github.com/amsanik9/farmconnect-backend)
 
 ---
 
@@ -26,6 +26,16 @@ The project consists of two parts:
 - Integrated **PostgreSQL database** for secure data storage  
 - Implemented **AI-based image validation** module  
 - Contributed to frontend integration between Flutter and backend APIs  
+
+---
+
+## Acknowledgement
+This project was developed as part of a group effort.  
+The original repositories are here:  
+- [FarmConnect Frontend (Main Repo)](https://github.com/Fenirok/farmconnect)  
+- [FarmConnect Backend (Main Repo)](https://github.com/Fenirok/farmconnect-backend)  
+
+This fork highlights my personal contributions and improvements.  
 
 ---
 
